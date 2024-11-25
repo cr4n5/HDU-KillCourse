@@ -1,0 +1,3 @@
+[submodule "HDU_Login"]
+	path = HDU_Login
+	url = https://github.com/cr4n5/HDU_Login.git
