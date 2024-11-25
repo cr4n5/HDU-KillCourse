@@ -14,7 +14,7 @@ python3
 1. 安装依赖
 
 ```shell
-git clone https://github.com/cr4n5/HDU-KillCourse.git
+git clone --recursive https://github.com/cr4n5/HDU-KillCourse.git
 cd HDU-KillCourse
 pip install -r requirements.txt
 ```
