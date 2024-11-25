@@ -21,7 +21,8 @@ pip install -r requirements.txt
 
 2. 修改配置
 
-进入 [config.json](./config.json) 文件。
+- 进入 [config.example.json](./config.example.json) 文件，修改对应内容。
+- 配置名更改为 config.json。
 
 ```
 {

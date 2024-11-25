@@ -3,7 +3,7 @@ import lxml.etree
 import time
 import json
 import re
-import hdu_login
+from HDU_Login import newjw_login
 
 def get_course_sort_id_true(list):
     pattern = r"queryCourse\(this,'(\d+)'"
@@ -100,7 +100,10 @@ if __name__ == "__main__":
     course=config["course"]
 
     session=requests.Session()
-    session=hdu_login.login(session,config["login"]["username"],config["login"]["password"])
+    session=newjw_login.login(session)
+    if session is None:
+        print("登录失败")
+        exit()
 
     xk_url="https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default"
     response=session.get(xk_url)

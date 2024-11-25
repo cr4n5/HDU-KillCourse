@@ -1,7 +1,7 @@
 import requests
 import time
 import json
-import hdu_login
+from HDU_Login import newjw_login
 
 with open('config.json', 'r') as f:
     config = json.load(f)
@@ -87,7 +87,10 @@ data={
 }
 
 session=requests.Session()
-session=hdu_login.login(session,config["login"]["username"],config["login"]["password"])
+session=newjw_login(session)
+if session is None:
+    print("登录失败！")
+    exit(1)
 
 print("正在获取课程信息...")
 response=session.post(url,data=data)
