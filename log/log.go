@@ -5,12 +5,19 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/fatih/color"
 )
 
 var (
 	infoLogger  *log.Logger
 	errorLogger *log.Logger
 	debugLogger *log.Logger
+)
+
+var (
+	infoColor  = color.New(color.FgGreen).SprintFunc()
+	errorColor = color.New(color.FgRed).SprintFunc()
 )
 
 var logDir = "log_files"
@@ -40,11 +47,11 @@ func init() {
 }
 
 func Info(v ...interface{}) {
-	infoLogger.Println(append([]interface{}{"[INFO]"}, v...)...)
+	infoLogger.Println(append([]interface{}{infoColor("[INFO]")}, v...)...)
 }
 
 func Error(v ...interface{}) {
-	errorLogger.Println(append([]interface{}{"[ERROR]"}, v...)...)
+	errorLogger.Println(append([]interface{}{errorColor("[ERROR]")}, v...)...)
 }
 
 func Debug(v ...interface{}) {
