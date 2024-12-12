@@ -19,6 +19,8 @@ Python 3版本见[HDU-KillCourse_Python](./HDU-KillCourse_Python/README.md)
 
 1. 下载编译文件
 
+- 在 [Releases](https://github.com/cr4n5/HDU-KillCourse/releases)中，下载对应系统的可执行文件。
+
 - Or
 
 ```shell
