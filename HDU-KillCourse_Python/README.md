@@ -5,24 +5,18 @@
 
 支持主修，选修，体育课程，特殊课程
 
-> [!NOTE]
->
-> 本项目经过Go重构，暂未测试。Python版本见[HDU-KillCourse_Python](./HDU-KillCourse_Python/README.md)
-
 ## 环境
 
-Go 1.23
-
-Python 3版本见[HDU-KillCourse_Python](./HDU-KillCourse_Python/README.md)
+python3
 
 ## 使用
 
-1. 下载编译文件
-
-- Or
+1. 安装依赖
 
 ```shell
-go build
+git clone --recursive https://github.com/cr4n5/HDU-KillCourse.git
+cd HDU-KillCourse/HDU-KillCourse_Python
+pip install -r requirements.txt
 ```
 
 2. 修改配置
@@ -48,18 +42,23 @@ go build
         "(2024-2025-1)-B2700380-02" : "0",
         "(2024-2025-1)-C2892008-02" : "1",
         "(2024-2025-1)-W0001321-06" : "0"
-    },
+    }
     //课程按顺序执行
-    "start_time": "2024-07-25 12:00:00"//程序开始时间
 }
 ```
 
-3. 选课
+3. 获取课程信息
 
-- 选课之前，可先去<a href='https://github.com/cr4n5/HDU-course_list'>杭电课程导出</a>，排好课表，获取课程教学班名称
+需在任务落实查询开放后，并在选课之前（省去在选课时查询课程请求，不对土豆服务器造成过多压力）获取课程信息
 
-> [!NOTE]
->
-> 需在任务落实查询开放后，并在选课之前（省去在选课时查询课程请求）执行一次可执行文件获取课程信息
+```shell
+python get_course.py
+```
 
-- 保证可执行文件和config.json在同一级目录下，然后执行可执行文件即可
+4. 选课
+
+选课之前，可先去<a href='https://github.com/cr4n5/HDU-course_list'>杭电课程导出</a>，排好课表，获取课程教学班名称
+
+```shell
+python kill_course.py
+```

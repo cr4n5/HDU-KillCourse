@@ -1,3 +1,14 @@
+.idea/
+
+# 配置产生文件忽略
 config.json
-hdu_xkkz_id.json
-hdu_kc.json
+course.json
+
+# 日志文件忽略
+log_files/
+
+# 测试文件忽略
+util/rsa_test.go
+
+# 二进制文件忽略
+HDU-KillCourse.exe
