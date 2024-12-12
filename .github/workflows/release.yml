@@ -1,0 +1,82 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.17'
+
+    - name: Build for Windows
+      run: GOOS=windows GOARCH=amd64 go build -o build/main-windows-amd64.exe main.go
+
+    - name: Build for Linux
+      run: GOOS=linux GOARCH=amd64 go build -o build/main-linux-amd64 main.go
+
+    - name: Build for macOS (Intel)
+      run: GOOS=darwin GOARCH=amd64 go build -o build/main-darwin-amd64 main.go
+
+    - name: Build for macOS (Apple Silicon)
+      run: GOOS=darwin GOARCH=arm64 go build -o build/main-darwin-arm64 main.go
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset Windows
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./build/main-windows-amd64.exe
+        asset_name: main-windows-amd64.exe
+        asset_content_type: application/octet-stream
+
+    - name: Upload Release Asset Linux
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./build/main-linux-amd64
+        asset_name: main-linux-amd64
+        asset_content_type: application/octet-stream
+
+    - name: Upload Release Asset macOS (Intel)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./build/main-darwin-amd64
+        asset_name: main-darwin-amd64
+        asset_content_type: application/octet-stream
+
+    - name: Upload Release Asset macOS (Apple Silicon)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./build/main-darwin-arm64
+        asset_name: main-darwin-arm64
+        asset_content_type: application/octet-stream
