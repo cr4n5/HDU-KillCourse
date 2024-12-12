@@ -16,19 +16,19 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v2
       with:
-        go-version: '1.17'
+        go-version: '1.23'
 
     - name: Build for Windows
-      run: GOOS=windows GOARCH=amd64 go build -o build/main-windows-amd64.exe main.go
+      run: GOOS=windows GOARCH=amd64 go build -o build/main-windows-amd64-${{ github.ref_name }}.exe
 
     - name: Build for Linux
-      run: GOOS=linux GOARCH=amd64 go build -o build/main-linux-amd64 main.go
+      run: GOOS=linux GOARCH=amd64 go build -o build/main-linux-amd64-${{ github.ref_name }}
 
     - name: Build for macOS (Intel)
-      run: GOOS=darwin GOARCH=amd64 go build -o build/main-darwin-amd64 main.go
+      run: GOOS=darwin GOARCH=amd64 go build -o build/main-darwin-amd64-${{ github.ref_name }}
 
     - name: Build for macOS (Apple Silicon)
-      run: GOOS=darwin GOARCH=arm64 go build -o build/main-darwin-arm64 main.go
+      run: GOOS=darwin GOARCH=arm64 go build -o build/main-darwin-arm64-${{ github.ref_name }}
 
     - name: Create Release
       id: create_release
@@ -47,8 +47,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./build/main-windows-amd64.exe
-        asset_name: main-windows-amd64.exe
+        asset_path: ./build/main-windows-amd64-${{ github.ref_name }}.exe
+        asset_name: HDU-KillCourse-windows-amd64-${{ github.ref_name }}.exe
         asset_content_type: application/octet-stream
 
     - name: Upload Release Asset Linux
@@ -57,8 +57,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./build/main-linux-amd64
-        asset_name: main-linux-amd64
+        asset_path: ./build/main-linux-amd64-${{ github.ref_name }}
+        asset_name: HDU-KillCourse-linux-amd64-${{ github.ref_name }}
         asset_content_type: application/octet-stream
 
     - name: Upload Release Asset macOS (Intel)
@@ -67,8 +67,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./build/main-darwin-amd64
-        asset_name: main-darwin-amd64
+        asset_path: ./build/main-darwin-amd64-${{ github.ref_name }}
+        asset_name: HDU-KillCourse-darwin-amd64-${{ github.ref_name }}
         asset_content_type: application/octet-stream
 
     - name: Upload Release Asset macOS (Apple Silicon)
@@ -77,6 +77,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./build/main-darwin-arm64
-        asset_name: main-darwin-arm64
+        asset_path: ./build/main-darwin-arm64-${{ github.ref_name }}
+        asset_name: HDU-KillCourse-darwin-arm64-${{ github.ref_name }}
         asset_content_type: application/octet-stream
+
