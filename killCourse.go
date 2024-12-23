@@ -178,32 +178,34 @@ func KillCourse(ctx context.Context, c *client.Client, cfg *config.Config, cours
 	case <-ctx.Done():
 		return
 	case <-time.After(time.Duration(waitTime) * time.Second):
-		go func() {
-			for {
-				select {
-				case <-ctx.Done():
-					return
-				default:
-					// 获取选课配置
-					err = c.GetClientBodyConfig()
+		log.Info("时间已到，开始处理课程...")
+		//go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				// 获取选课配置
+				err = c.GetClientBodyConfig()
+				if err != nil {
+					log.Error("获取选课配置失败: ", err)
+					continue
+				}
+				// 选退课
+				for k, v := range cfg.Course {
+					// 处理课程
+					log.Info("正在处理课程: ", k)
+					err = HandleCourse(c, cfg, course, k, v)
 					if err != nil {
-						log.Error("获取选课配置失败: ", err)
+						log.Error("处理课程失败: ", err)
 						continue
 					}
-					// 选退课
-					for k, v := range cfg.Course {
-						// 处理课程
-						err = HandleCourse(c, cfg, course, k, v)
-						if err != nil {
-							log.Error("处理课程失败: ", err)
-							continue
-						}
-					}
-					// 完成
-					channel <- "完成"
-					return
 				}
+				// 完成
+				channel <- "完成"
+				return
 			}
-		}()
+		}
+		//}()
 	}
 }
