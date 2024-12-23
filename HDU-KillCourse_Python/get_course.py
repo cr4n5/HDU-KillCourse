@@ -87,7 +87,7 @@ data={
 }
 
 session=requests.Session()
-session=newjw_login(session)
+session=newjw_login.login(session)
 if session is None:
     print("登录失败！")
     exit(1)
