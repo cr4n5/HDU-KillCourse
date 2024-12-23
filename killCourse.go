@@ -14,6 +14,11 @@ var channel = make(chan string)
 
 // GetDoJxbId 获取doJxbId
 func GetDoJxbId(c *client.Client, KchId string, JxbId string, Kklxdm string, NjdmId string, XueNian string, Xqm string) (string, error) {
+	// 检查c.ClientBodyConfig是否为nil，测试用
+	if c.ClientBodyConfig == nil {
+		return "", errors.New("ClientBodyConfig未初始化")
+	}
+
 	// 设置请求参数
 	req := &client.GetDoJxbIdReq{
 		BklxID: "0",
@@ -145,10 +150,11 @@ func HandleCourse(c *client.Client, cfg *config.Config, course *config.Course, C
 					return err
 				}
 			}
+
+			return nil
 		}
 	}
-
-	return nil
+	return errors.New(CourseName + "课程不存在")
 }
 
 // KillCourse 选退课
