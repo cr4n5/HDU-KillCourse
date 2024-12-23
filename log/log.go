@@ -16,8 +16,8 @@ var (
 )
 
 var (
-	infoColor  = color.New(color.FgGreen).SprintFunc()
-	errorColor = color.New(color.FgRed).SprintFunc()
+	InfoColor  = color.New(color.FgGreen).SprintFunc()
+	ErrorColor = color.New(color.FgRed).SprintFunc()
 )
 
 var logDir = "log_files"
@@ -47,11 +47,11 @@ func init() {
 }
 
 func Info(v ...interface{}) {
-	infoLogger.Println(append([]interface{}{infoColor("[INFO]")}, v...)...)
+	infoLogger.Println(append([]interface{}{InfoColor("[INFO]")}, v...)...)
 }
 
 func Error(v ...interface{}) {
-	errorLogger.Println(append([]interface{}{errorColor("[ERROR]")}, v...)...)
+	errorLogger.Println(append([]interface{}{ErrorColor("[ERROR]")}, v...)...)
 }
 
 func Debug(v ...interface{}) {

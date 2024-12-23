@@ -19,6 +19,7 @@ func GetCourse(c *client.Client, cfg *config.Config) (*config.Course, error) {
 
 	// 本地课程信息读取失败，从服务器获取课程信息
 	log.Error("本地课程信息读取失败，正在从服务器获取课程信息...")
+	log.Info("Notice！: 等待时间可能较长，请耐心等待...")
 	// 初始化请求
 	XueNian := cfg.Time.XueNian
 	intXueNian, err := strconv.Atoi(XueNian)

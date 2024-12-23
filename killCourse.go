@@ -154,7 +154,13 @@ func HandleCourse(c *client.Client, cfg *config.Config, course *config.Course, C
 // KillCourse 选退课
 func KillCourse(ctx context.Context, c *client.Client, cfg *config.Config, course *config.Course) {
 	// 计算需要等待的时间
-	t, err := time.Parse("2006-01-02 15:04:05", cfg.StartTime)
+	// 时区
+	loc, err := time.LoadLocation("Asia/Shanghai")
+	if err != nil {
+		log.Error("初始化时间地区失败，正在使用手动定义的时区信息 :", err)
+		loc = time.FixedZone("CST", 8*3600)
+	}
+	t, err := time.ParseInLocation("2006-01-02 15:04:05", cfg.StartTime, loc)
 	if err != nil {
 		log.Error("时间格式错误: ", err)
 		return
@@ -162,29 +168,31 @@ func KillCourse(ctx context.Context, c *client.Client, cfg *config.Config, cours
 	log.Info("选课开始时间: ", t)
 	waitTime := t.Unix() - time.Now().Unix()
 
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case <-time.After(time.Duration(waitTime) * time.Second):
-			// 获取选课配置
-			err = c.GetClientBodyConfig()
-			if err != nil {
-				log.Error("获取选课配置失败: ", err)
-				continue
-			}
-			// 选退课
-			for k, v := range cfg.Course {
-				// 处理课程
-				err = HandleCourse(c, cfg, course, k, v)
+	select {
+	case <-ctx.Done():
+		return
+	case <-time.After(time.Duration(waitTime) * time.Second):
+		go func() {
+			for {
+				// 获取选课配置
+				err = c.GetClientBodyConfig()
 				if err != nil {
-					log.Error("处理课程失败: ", err)
+					log.Error("获取选课配置失败: ", err)
 					continue
 				}
+				// 选退课
+				for k, v := range cfg.Course {
+					// 处理课程
+					err = HandleCourse(c, cfg, course, k, v)
+					if err != nil {
+						log.Error("处理课程失败: ", err)
+						continue
+					}
+				}
+				// 完成
+				channel <- "完成"
+				return
 			}
-			// 完成
-			channel <- "完成"
-			return
-		}
+		}()
 	}
 }
