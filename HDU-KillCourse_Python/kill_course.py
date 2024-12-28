@@ -4,6 +4,7 @@ import time
 import json
 import re
 from HDU_Login import newjw_login
+from HDU_Login import cas_login
 
 def get_course_sort_id_true(list):
     pattern = r"queryCourse\(this,'(\d+)'"
@@ -100,10 +101,14 @@ if __name__ == "__main__":
     course=config["course"]
 
     session=requests.Session()
-    session=newjw_login.login(session)
+    # session=newjw_login.login(session)
+    # 偶不理解学校为什么要重定向到cas
+    session=cas_login.login(session)
     if session is None:
         print("登录失败")
         exit()
+    newjw_url="https://newjw.hdu.edu.cn/sso/driot4login"
+    response=session.get(newjw_url)
 
     xk_url="https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default"
     response=session.get(xk_url)

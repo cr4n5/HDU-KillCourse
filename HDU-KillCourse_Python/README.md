@@ -27,7 +27,7 @@ pip install -r requirements.txt
 ```
 {
     "login": {
-        "username": "2201xxxx",//教务系统账号密码（非数字杭电统一认证账号密码！！）
+        "username": "2201xxxx",// 数字杭电统一认证账号密码
         "password": "xxxxxxxx"
     },
     "time": {
