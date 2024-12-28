@@ -24,18 +24,19 @@ Python 3版本见[HDU-KillCourse_Python](./HDU-KillCourse_Python/README.md)
 - Or
 
 ```shell
-go build
+go build && ./HDU-KillCourse
 ```
 
 2. 修改配置
 
+- 下载 [config.example.json](./config.example.json) 文件。
 - 进入 [config.example.json](./config.example.json) 文件，修改对应内容。
 - 配置名更改为 config.json。
 
 ```
 {
     "login": {
-        "username": "2201xxxx",//教务系统账号密码（非数字杭电统一认证账号密码！！）
+        "username": "2201xxxx",//杭电统一身份认证账号密码，为啥hdu要302到这个登录，我也不知道
         "password": "xxxxxxxx"
     },
     "time": {
@@ -56,6 +57,9 @@ go build
 }
 ```
 
+- ~~统一认证登录，打爆土豆服务器~~
+- <img src="./Doc/img/香草蛋糕.jpg" width="100" height="100" alt="huohuo">
+
 3. 选课
 
 - 选课之前，可先去<a href='https://github.com/cr4n5/HDU-course_list'>杭电课程导出</a>，排好课表，获取课程教学班名称
@@ -65,3 +69,7 @@ go build
 > 需在任务落实查询开放后，并在选课之前（省去在选课时查询课程请求）执行一次可执行文件获取课程信息
 
 - 保证可执行文件和config.json在同一级目录下，然后执行可执行文件即可
+
+## 协议
+
+[Apache License 2.0](./LICENSE)

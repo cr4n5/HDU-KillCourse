@@ -18,6 +18,36 @@ func (req *LoginReq) ToFormData() url.Values {
 	}
 }
 
+// data={'username': config["login"]["username"], 'type': 'UsernamePassword', '_eventId': 'submit', 'geolocation': '',
+//         'execution': execution,
+//         'captcha_code': '', 'croypto': croypto, 'password': password}
+
+// CasLoginReq cas登录请求
+type CasLoginReq struct {
+	Username    string
+	Type        string
+	EventID     string
+	Geolocation string
+	Execution   string
+	CaptchaCode string
+	Croypto     string
+	Password    string
+}
+
+// ToFormData 转换为表单数据
+func (req *CasLoginReq) ToFormData() url.Values {
+	return url.Values{
+		"username":     {req.Username},
+		"type":         {req.Type},
+		"_eventId":     {req.EventID},
+		"geolocation":  {req.Geolocation},
+		"execution":    {req.Execution},
+		"captcha_code": {req.CaptchaCode},
+		"croypto":      {req.Croypto},
+		"password":     {req.Password},
+	}
+}
+
 // GetCourseReq 获取课程请求
 type GetCourseReq struct {
 	Kkbm        string

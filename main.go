@@ -31,7 +31,7 @@ func main() {
 	// 登录
 	log.Info("开始登录...")
 	c := client.NewClient(cfg)
-	err = Login(c, cfg)
+	err = CasLogin(c, cfg)
 	if err != nil {
 		log.Error("登录失败: ", err)
 		return

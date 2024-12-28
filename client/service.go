@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"golang.org/x/net/html"
 	"regexp"
 	"strings"
 	"time"
 
 	"github.com/antchfx/htmlquery"
+	"golang.org/x/net/html"
 )
 
 // GetCsrftoken 获取csrftoken
@@ -37,6 +37,52 @@ func (c *Client) GetCsrftoken() (string, error) {
 	return csrftoken, nil
 }
 
+// GetCasLoginConfig 获取cas登录配置
+func (c *Client) GetCasLoginConfig() (execution string, croypto string, err error) {
+	result, err := c.Get("https://sso.hdu.edu.cn/login")
+	if err != nil {
+		return "", "", err
+	}
+
+	// 解析cas登录配置
+	doc, err := htmlquery.Parse(strings.NewReader(string(result)))
+	if err != nil {
+		return "", "", err
+	}
+	execution = htmlquery.InnerText(htmlquery.FindOne(doc, `//*[@id="login-page-flowkey"]/text()`))
+	croypto = htmlquery.InnerText(htmlquery.FindOne(doc, `//*[@id="login-croypto"]/text()`))
+	if execution == "" || croypto == "" {
+		return "", "", errors.New("获取cas登录配置失败")
+	}
+
+	return execution, croypto, nil
+}
+
+// CasLoginPost cas登录请求
+func (c *Client) CasLoginPost(req *CasLoginReq) (string, error) {
+	login_url := "https://sso.hdu.edu.cn/login"
+	// 登录
+	formData := req.ToFormData()
+	result, err := c.Post(login_url, formData.Encode())
+	if err != nil {
+		return "", err
+	}
+
+	return string(result), nil
+}
+
+// CasLoginNewjw cas登录newjw
+func (c *Client) CasLoginNewjw() (string, error) {
+	new_jw := "https://newjw.hdu.edu.cn/sso/driot4login"
+	// 通过cas登录newjw
+	result, err := c.Get(new_jw)
+	if err != nil {
+		return "", err
+	}
+
+	return string(result), nil
+}
+
 // GetPublicKey 获取公钥
 func (c *Client) GetPublicKey() (*GetPublicKeyResp, error) {
 	result, err := c.Get(fmt.Sprintf("https://newjw.hdu.edu.cn/jwglxt/xtgl/login_getPublicKey.html?time=%d", time.Now().Unix()))
@@ -53,8 +99,8 @@ func (c *Client) GetPublicKey() (*GetPublicKeyResp, error) {
 	return &PublicKeyResp, nil
 }
 
-// LoginPost 登录请求
-func (c *Client) LoginPost(req *LoginReq) (string, error) {
+// NewjwLoginPost Newjw登录请求
+func (c *Client) NewjwLoginPost(req *LoginReq) (string, error) {
 	login_url := "https://newjw.hdu.edu.cn/jwglxt/xtgl/login_slogin.html"
 	// 登录
 	formData := req.ToFormData()
