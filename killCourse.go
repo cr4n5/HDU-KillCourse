@@ -5,7 +5,9 @@ import (
 	"HDU-KillCourse/config"
 	"HDU-KillCourse/log"
 	"context"
+	"encoding/json"
 	"errors"
+	"os"
 	"time"
 )
 
@@ -186,11 +188,23 @@ func KillCourse(ctx context.Context, c *client.Client, cfg *config.Config, cours
 				return
 			default:
 				// 获取选课配置
-				err = c.GetClientBodyConfig()
+				err = ReadClientBodyConfig(c)
 				if err != nil {
-					log.Error("获取选课配置失败: ", err)
-					continue
+					err = c.GetClientBodyConfig()
+					if err != nil {
+						log.Error("获取选课配置失败: ", err)
+						continue
+					}
 				}
+				// 保存选课配置
+				if cfg.ClientBodyConfigEnabled == "1" {
+					err = SaveClientBodyConfig(c)
+					if err != nil {
+						log.Error("保存选课配置失败: ", err)
+						return
+					}
+				}
+				log.Info("选课配置获取成功")
 				// 选退课
 				for k, v := range cfg.Course {
 					// 处理课程
@@ -208,4 +222,40 @@ func KillCourse(ctx context.Context, c *client.Client, cfg *config.Config, cours
 		}
 		//}()
 	}
+}
+
+// SaveClientBodyConfig 保存选课配置
+func SaveClientBodyConfig(c *client.Client) error {
+	// 将c.ClientBodyConfig保存到文件CLientBodyConfig.json
+	clientBodyConfig := c.ClientBodyConfig
+	bytes, err := json.Marshal(clientBodyConfig)
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile("ClientBodyConfig.json", bytes, 0666)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ReadClientBodyConfig 读取选课配置
+func ReadClientBodyConfig(c *client.Client) error {
+	// 读取文件CLientBodyConfig.json到c.ClientBodyConfig
+	bytes, err := os.ReadFile("ClientBodyConfig.json")
+	if err != nil {
+		return err
+	}
+
+	var clientBodyConfig client.ClientBodyConfig
+	err = json.Unmarshal(bytes, &clientBodyConfig)
+	if err != nil {
+		return err
+	}
+
+	c.ClientBodyConfig = &clientBodyConfig
+
+	return nil
 }

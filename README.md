@@ -24,7 +24,7 @@ Python 3版本见[HDU-KillCourse_Python](./HDU-KillCourse_Python/README.md)
 - Or
 
 ```shell
-go build && ./HDU-KillCourse
+go build
 ```
 
 2. 修改配置
@@ -53,7 +53,8 @@ go build && ./HDU-KillCourse
         "(2024-2025-1)-W0001321-06" : "0"
     },
     //课程按顺序执行
-    "start_time": "2024-07-25 12:00:00"//程序开始时间
+    "start_time": "2024-07-25 12:00:00",//程序开始时间
+    "ClientBodyConfigEnabled": "0"
 }
 ```
 

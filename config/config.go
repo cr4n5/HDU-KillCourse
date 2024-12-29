@@ -17,8 +17,9 @@ type Config struct {
 		XueNian string `json:"XueNian"`
 		XueQi   string `json:"XueQi"`
 	} `json:"time"`
-	Course    map[string]string `json:"course"`
-	StartTime string            `json:"start_time"`
+	Course                  map[string]string `json:"course"`
+	StartTime               string            `json:"start_time"`
+	ClientBodyConfigEnabled string            `json:"ClientBodyConfigEnabled"`
 }
 
 // Course 课程信息结构体
