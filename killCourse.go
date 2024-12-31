@@ -226,6 +226,7 @@ func KillCourse(ctx context.Context, c *client.Client, cfg *config.Config, cours
 				// 选退课
 				for k, v := range cfg.Course {
 					// 处理课程
+					log.Info("----------------------------------------")
 					log.Info("正在处理课程: ", k)
 					err = HandleCourse(c, cfg, course, k, v)
 					if err != nil {
