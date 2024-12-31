@@ -4,6 +4,7 @@ import (
 	"HDU-KillCourse/client"
 	"HDU-KillCourse/config"
 	"HDU-KillCourse/log"
+	"HDU-KillCourse/vars"
 	"context"
 	"fmt"
 	"os"
@@ -18,6 +19,8 @@ func main() {
 		fmt.Scanln()
 	}()
 	ctx := context.Background()
+
+	vars.ShowPortal()
 
 	// 读取配置文件
 	log.Info("开始读取配置文件...")

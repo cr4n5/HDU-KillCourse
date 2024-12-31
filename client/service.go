@@ -265,16 +265,22 @@ func (c *Client) GetDoJxbId(req *GetDoJxbIdReq) ([]GetDoJxbIdResp, error) {
 }
 
 // SelectCourse 选课
-func (c *Client) SelectCourse(req *SelectCourseReq) (string, error) {
+func (c *Client) SelectCourse(req *SelectCourseReq) (*SelectCourseResq, error) {
 	url := "https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzbjk_xkBcZyZzxkYzb.html?gnmkdm=N253512"
 	// 选课
 	formData := req.ToFormData()
 	result, err := c.Post(url, formData.Encode())
 	if err != nil {
-		return "", err
+		return nil, err
+	}
+	// 解析选课结果
+	var selectCourseResq SelectCourseResq
+	err = json.Unmarshal(result, &selectCourseResq)
+	if err != nil {
+		return nil, err
 	}
 
-	return string(result), nil
+	return &selectCourseResq, nil
 }
 
 // CancelCourse 退课

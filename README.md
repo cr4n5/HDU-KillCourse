@@ -5,15 +5,13 @@
 
 支持主修，选修，体育课程，特殊课程
 
-> [!NOTE]
+> [!TIP]
 >
-> 本项目经过Go重构，暂未测试。Python版本见[HDU-KillCourse_Python](./HDU-KillCourse_Python/README.md)
+> If you are good at using it, you'll discover some pleasant surprises.
 
 ## 环境
 
 Go 1.23
-
-Python 3版本见[HDU-KillCourse_Python](./HDU-KillCourse_Python/README.md)
 
 ## 使用
 
@@ -54,11 +52,12 @@ go build
     },
     //课程按顺序执行
     "start_time": "2024-07-25 12:00:00",//程序开始时间
-    "ClientBodyConfigEnabled": "0"
+    "ClientBodyConfigEnabled": "0"//默认
 }
 ```
 
 - ~~统一认证登录，打爆土豆服务器~~
+- ~~2024.12.31 统一认证登录教务真就爆了~~
 - <img src="./Doc/img/香草蛋糕.jpg" width="100" height="100" alt="huohuo">
 
 3. 选课

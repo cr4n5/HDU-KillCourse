@@ -3,6 +3,7 @@ package client
 import (
 	"HDU-KillCourse/config"
 	"HDU-KillCourse/log"
+	"HDU-KillCourse/vars"
 	"fmt"
 	"io"
 	"net/http"
@@ -58,11 +59,13 @@ func (c *Client) Get(url string) ([]byte, error) {
 		return nil, err
 	}
 
-	// 保存请求响应日志
-	log.Debug(fmt.Sprintf("Request URL: %s [GET]\nRequest Headers: %v\nResponse: %s",
-		req.URL.String(),
-		req.Header,
-		string(result)))
+	if !vars.NoDebugUrl[url] {
+		// 保存请求响应日志
+		log.Debug(fmt.Sprintf("Request URL: %s [GET]\nRequest Headers: %v\nResponse: %s",
+			req.URL.String(),
+			req.Header,
+			string(result)))
+	}
 
 	return result, nil
 }
@@ -85,12 +88,14 @@ func (c *Client) Post(url string, formData string) ([]byte, error) {
 		return nil, err
 	}
 
-	// 保存请求响应日志
-	log.Debug(fmt.Sprintf("Request URL: %s [POST]\nRequest Headers: %v\nRequest Body: %s\nResponse: %s",
-		req.URL.String(),
-		req.Header,
-		formData,
-		string(result)))
+	if !vars.NoDebugUrl[url] {
+		// 保存请求响应日志
+		log.Debug(fmt.Sprintf("Request URL: %s [POST]\nRequest Headers: %v\nRequest Body: %s\nResponse: %s",
+			req.URL.String(),
+			req.Header,
+			formData,
+			string(result)))
+	}
 
 	return result, nil
 }

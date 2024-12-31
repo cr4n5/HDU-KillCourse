@@ -80,7 +80,14 @@ func SelectCourse(c *client.Client, JxbIds string, KchId string, Kklxdm string, 
 		return err
 	}
 
-	log.Info(result) // 打印选课结果，待完善
+	if result.Flag == "1" {
+		log.Info("选课成功")
+	} else if result.Flag == "0" {
+		log.Error("选课失败: ", result.Msg)
+	} else {
+		log.Error("选课失败: 人数可能已满", result)
+	}
+
 	return nil
 }
 
@@ -100,7 +107,12 @@ func CancelCourse(c *client.Client, JxbIds string, KchId string, XueNian string,
 		return err
 	}
 
-	log.Info(result) // 打印退课结果，待完善
+	if result == "\"1\"" {
+		log.Info("退课成功(可能？)")
+	} else {
+		log.Error("退课失败：", result)
+	}
+
 	return nil
 }
 

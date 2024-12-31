@@ -19,3 +19,8 @@ type GetDoJxbIdResp struct {
 	JxbID   string `json:"jxb_id"`
 	DoJxbID string `json:"do_jxb_id"`
 }
+
+type SelectCourseResq struct {
+	Flag string `json:"flag"`
+	Msg  string `json:"msg"`
+}
