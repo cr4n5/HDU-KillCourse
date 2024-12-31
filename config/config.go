@@ -30,6 +30,8 @@ type Course struct {
 		JxbID  string `json:"jxb_id"`
 		Jxbzc  string `json:"jxbzc"`
 		Kklxmc string `json:"kklxmc"`
+		Kcmc   string `json:"kcmc"` // 课程名称
+		Sksj   string `json:"sksj"` // 上课时间
 	} `json:"items"`
 }
 

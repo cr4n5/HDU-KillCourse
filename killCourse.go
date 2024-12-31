@@ -134,6 +134,10 @@ func HandleCourse(c *client.Client, cfg *config.Config, course *config.Course, C
 				return errors.New("课程类型错误")
 			}
 
+			// 打印课程信息
+			log.Info("课程名称: ", v.Kcmc)
+			log.Info("上课时间: ", v.Sksj)
+
 			// 设置NjdmId
 			NjdmId := "20" + c.ClientBodyConfig.BhId[0:2]
 
