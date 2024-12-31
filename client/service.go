@@ -247,7 +247,7 @@ func (c *Client) GetClientBodyConfig() error {
 
 // GetDoJxbId 获取do_jxb_id
 func (c *Client) GetDoJxbId(req *GetDoJxbIdReq) ([]GetDoJxbIdResp, error) {
-	url := "https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html"
+	url := "https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512"
 	// 获取do_jxb_id
 	formData := req.ToFormData()
 	result, err := c.Post(url, formData.Encode())
@@ -266,7 +266,7 @@ func (c *Client) GetDoJxbId(req *GetDoJxbIdReq) ([]GetDoJxbIdResp, error) {
 
 // SelectCourse 选课
 func (c *Client) SelectCourse(req *SelectCourseReq) (string, error) {
-	url := "https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzbjk_xkBcZyZzxkYzb.html"
+	url := "https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzbjk_xkBcZyZzxkYzb.html?gnmkdm=N253512"
 	// 选课
 	formData := req.ToFormData()
 	result, err := c.Post(url, formData.Encode())
@@ -279,7 +279,7 @@ func (c *Client) SelectCourse(req *SelectCourseReq) (string, error) {
 
 // CancelCourse 退课
 func (c *Client) CancelCourse(req *CancelCourseReq) (string, error) {
-	url := "https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzb_tuikBcZzxkYzb.html"
+	url := "https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzb_tuikBcZzxkYzb.html?gnmkdm=N253512"
 	// 退课
 	formData := req.ToFormData()
 	result, err := c.Post(url, formData.Encode())

@@ -85,11 +85,13 @@ func SelectCourse(c *client.Client, JxbIds string, KchId string, Kklxdm string, 
 }
 
 // CancelCourse 退课
-func CancelCourse(c *client.Client, JxbIds string, KchId string) error {
+func CancelCourse(c *client.Client, JxbIds string, KchId string, XueNian string, Xqm string) error {
 	// 设置请求参数
 	req := &client.CancelCourseReq{
 		JxbIDs: JxbIds,
 		KchID:  KchId,
+		Xkxnm:  XueNian,
+		Xkxqm:  Xqm,
 	}
 
 	// 发送请求
@@ -121,7 +123,7 @@ func HandleCourse(c *client.Client, cfg *config.Config, course *config.Course, C
 			}
 
 			// 设置NjdmId
-			NjdmId := "20" + cfg.Login.Username[0:2]
+			NjdmId := "20" + c.ClientBodyConfig.BhId[0:2]
 
 			// 设置Xqm
 			Xqm := cfg.Time.XueQi
@@ -147,7 +149,7 @@ func HandleCourse(c *client.Client, cfg *config.Config, course *config.Course, C
 				}
 			} else {
 				// 退课
-				err = CancelCourse(c, doJxbId, v.KchID)
+				err = CancelCourse(c, doJxbId, v.KchID, cfg.Time.XueNian, Xqm)
 				if err != nil {
 					return err
 				}

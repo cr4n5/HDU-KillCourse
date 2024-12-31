@@ -258,6 +258,8 @@ func (req *SelectCourseReq) ToFormData() url.Values {
 type CancelCourseReq struct {
 	JxbIDs string
 	KchID  string
+	Xkxnm  string
+	Xkxqm  string
 }
 
 // ToFormData 转换为表单数据
@@ -265,5 +267,7 @@ func (req *CancelCourseReq) ToFormData() url.Values {
 	return url.Values{
 		"jxb_ids": {req.JxbIDs},
 		"kch_id":  {req.KchID},
+		"xkxnm":   {req.Xkxnm},
+		"xkxqm":   {req.Xkxqm},
 	}
 }
