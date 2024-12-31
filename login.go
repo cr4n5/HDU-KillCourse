@@ -1,11 +1,11 @@
 package main
 
 import (
-	"HDU-KillCourse/client"
-	"HDU-KillCourse/config"
-	"HDU-KillCourse/log"
-	"HDU-KillCourse/util"
 	"errors"
+	"github.com/cr4n5/HDU-KillCourse/client"
+	"github.com/cr4n5/HDU-KillCourse/config"
+	"github.com/cr4n5/HDU-KillCourse/log"
+	"github.com/cr4n5/HDU-KillCourse/util"
 	"strings"
 )
 
@@ -26,18 +26,18 @@ func NewjwLogin(c *client.Client, cfg *config.Config) error {
 	}
 
 	// 加密密码
-	encryptedPassword, err := util.RsaEncrypt(publicKey.Modules, cfg.Login.Password)
+	encryptedPassword, err := util.RsaEncrypt(publicKey.Modules, cfg.NewjwLogin.Password)
 	if err != nil {
 		return err
 	}
-	cfg.Login.Password = encryptedPassword
+	cfg.NewjwLogin.Password = encryptedPassword
 
 	log.Info("正在登录...")
 	// 登录
 	loginReq := &client.LoginReq{
 		Csrftoken: csrftoken,
-		Username:  cfg.Login.Username,
-		Password:  cfg.Login.Password,
+		Username:  cfg.NewjwLogin.Username,
+		Password:  cfg.NewjwLogin.Password,
 	}
 	result, err := c.NewjwLoginPost(loginReq)
 	if err != nil {
@@ -62,23 +62,23 @@ func CasLogin(c *client.Client, cfg *config.Config) error {
 	}
 
 	// 加密密码
-	encryptedPassword, err := util.DesEncrypt(croypto, cfg.Login.Password)
+	encryptedPassword, err := util.DesEncrypt(croypto, cfg.CasLogin.Password)
 	if err != nil {
 		return err
 	}
-	cfg.Login.Password = encryptedPassword
+	cfg.CasLogin.Password = encryptedPassword
 
 	log.Info("正在cas登录...")
 	// cas登录
 	casLoginReq := &client.CasLoginReq{
-		Username:    cfg.Login.Username,
+		Username:    cfg.CasLogin.Username,
 		Type:        "UsernamePassword",
 		EventID:     "submit",
 		Geolocation: "",
 		Execution:   execution,
 		CaptchaCode: "",
 		Croypto:     croypto,
-		Password:    cfg.Login.Password,
+		Password:    cfg.CasLogin.Password,
 	}
 	result, err := c.CasLoginPost(casLoginReq)
 	if err != nil {
@@ -86,7 +86,7 @@ func CasLogin(c *client.Client, cfg *config.Config) error {
 	}
 	// 判断是否登录成功
 	if strings.Contains(result, "用户名密码登录") {
-		return errors.New("cas登录失败, 请检查用户名和密码是否正确")
+		return errors.New("用户名或密码不正确！")
 	}
 
 	// 通过cas登录newjw
@@ -101,4 +101,47 @@ func CasLogin(c *client.Client, cfg *config.Config) error {
 	}
 
 	return nil
+}
+
+// Login 根据Level优先级登录
+func Login(cfg *config.Config) (*client.Client, error) {
+	// 创建一个新的客户端
+	c := client.NewClient(cfg)
+
+	// 根据Level优先级登录
+	if cfg.CasLogin.Level < cfg.NewjwLogin.Level {
+		// cas登录
+		log.Info("正在通过cas登录...")
+		err := CasLogin(c, cfg)
+		if err != nil {
+			log.Error("cas登录失败: ", err)
+			// newjw登录
+			log.Info("正在通过newjw登录...")
+			// 重置client
+			c = client.NewClient(cfg)
+			err := NewjwLogin(c, cfg)
+			if err != nil {
+				log.Error("newjw登录失败: ", err)
+				return nil, err
+			}
+		}
+	} else {
+		// newjw登录
+		log.Info("正在通过newjw登录...")
+		err := NewjwLogin(c, cfg)
+		if err != nil {
+			log.Error("newjw登录失败: ", err)
+			// cas登录
+			log.Info("正在通过cas登录...")
+			// 重置client
+			c = client.NewClient(cfg)
+			err := CasLogin(c, cfg)
+			if err != nil {
+				log.Error("cas登录失败: ", err)
+				return nil, err
+			}
+		}
+	}
+
+	return c, nil
 }

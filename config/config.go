@@ -1,18 +1,24 @@
 package config
 
 import (
-	"HDU-KillCourse/log"
 	"encoding/json"
 	"errors"
+	"github.com/cr4n5/HDU-KillCourse/log"
 	"os"
 )
 
 // Config 配置文件结构体
 type Config struct {
-	Login struct {
+	CasLogin struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
-	} `json:"login"`
+		Level    string `json:"level"`
+	} `json:"cas_login"`
+	NewjwLogin struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+		Level    string `json:"level"`
+	} `json:"newjw_login"`
 	Time struct {
 		XueNian string `json:"XueNian"`
 		XueQi   string `json:"XueQi"`
@@ -58,7 +64,7 @@ func InitCfg() (*Config, error) {
 
 // Validate 验证配置文件
 func (cfg *Config) Validate() error {
-	if cfg.Login.Username == "" || cfg.Login.Password == "" {
+	if (cfg.CasLogin.Username == "" || cfg.CasLogin.Password == "") && (cfg.NewjwLogin.Username == "" || cfg.NewjwLogin.Password == "") {
 		return errors.New("用户名或密码为空")
 	}
 	if cfg.Time.XueNian == "" || cfg.Time.XueQi == "" {
@@ -72,8 +78,14 @@ func (cfg *Config) Validate() error {
 	}
 
 	// 打印配置文件
-	log.Info("Username: ", cfg.Login.Username)
-	log.Info("Password: ", cfg.Login.Password)
+	log.Info("CasLogin:")
+	log.Info("Username: ", cfg.CasLogin.Username)
+	log.Info("Password: ", cfg.CasLogin.Password)
+	log.Info("Level: ", cfg.CasLogin.Level)
+	log.Info("NewjwLogin:")
+	log.Info("Username: ", cfg.NewjwLogin.Username)
+	log.Info("Password: ", cfg.NewjwLogin.Password)
+	log.Info("Level: ", cfg.NewjwLogin.Level)
 	log.Info("XueNian: ", cfg.Time.XueNian)
 	log.Info("XueQi: ", cfg.Time.XueQi)
 	log.Info("StartTime: ", cfg.StartTime)

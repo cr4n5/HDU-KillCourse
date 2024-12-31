@@ -1,12 +1,12 @@
 package main
 
 import (
-	"HDU-KillCourse/client"
-	"HDU-KillCourse/config"
-	"HDU-KillCourse/log"
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/cr4n5/HDU-KillCourse/client"
+	"github.com/cr4n5/HDU-KillCourse/config"
+	"github.com/cr4n5/HDU-KillCourse/log"
 	"os"
 	"time"
 )

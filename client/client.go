@@ -1,10 +1,10 @@
 package client
 
 import (
-	"HDU-KillCourse/config"
-	"HDU-KillCourse/log"
-	"HDU-KillCourse/vars"
 	"fmt"
+	"github.com/cr4n5/HDU-KillCourse/config"
+	"github.com/cr4n5/HDU-KillCourse/log"
+	"github.com/cr4n5/HDU-KillCourse/vars"
 	"io"
 	"net/http"
 	"net/http/cookiejar"

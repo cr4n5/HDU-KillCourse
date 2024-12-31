@@ -1,4 +1,4 @@
-module HDU-KillCourse
+module github.com/cr4n5/HDU-KillCourse
 
 go 1.23
 

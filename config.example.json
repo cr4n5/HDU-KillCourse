@@ -1,7 +1,13 @@
 {
-    "login": {
+    "cas_login": {
         "username": "2201xxxx",
-        "password": "xxxxxxxx"
+        "password": "xxxxxxxx",
+        "level": "0"
+    },
+    "newjw_login": {
+        "username": "2201xxxx",
+        "password": "xxxxxxxx",
+        "level": "1"
     },
     "time": {
         "XueNian": "2024",

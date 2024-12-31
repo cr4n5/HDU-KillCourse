@@ -18,10 +18,6 @@ func (req *LoginReq) ToFormData() url.Values {
 	}
 }
 
-// data={'username': config["login"]["username"], 'type': 'UsernamePassword', '_eventId': 'submit', 'geolocation': '',
-//         'execution': execution,
-//         'captcha_code': '', 'croypto': croypto, 'password': password}
-
 // CasLoginReq cas登录请求
 type CasLoginReq struct {
 	Username    string

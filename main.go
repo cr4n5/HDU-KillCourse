@@ -1,12 +1,11 @@
 package main
 
 import (
-	"HDU-KillCourse/client"
-	"HDU-KillCourse/config"
-	"HDU-KillCourse/log"
-	"HDU-KillCourse/vars"
 	"context"
 	"fmt"
+	"github.com/cr4n5/HDU-KillCourse/config"
+	"github.com/cr4n5/HDU-KillCourse/log"
+	"github.com/cr4n5/HDU-KillCourse/vars"
 	"os"
 	"os/signal"
 	"syscall"
@@ -33,10 +32,9 @@ func main() {
 
 	// 登录
 	log.Info("开始登录...")
-	c := client.NewClient(cfg)
-	err = CasLogin(c, cfg)
+	c, err := Login(cfg)
 	if err != nil {
-		log.Error("登录失败: ", err)
+		log.Error("登录失败...")
 		return
 	}
 	log.Info("登录成功...")

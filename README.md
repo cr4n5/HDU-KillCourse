@@ -33,10 +33,16 @@ go build
 
 ```
 {
-    "login": {
-        "username": "2201xxxx",//杭电统一身份认证账号密码，为啥hdu要302到这个登录，我也不知道
-        "password": "xxxxxxxx"
+    "cas_login": {
+        "username": "2201xxxx",//杭电统一身份认证账号密码
+        "password": "xxxxxxxx",
+        "level:" : "0" //优先级
     },
+    "newjw_login": {
+        "username": "2201xxxx",//正方教务系统账号密码
+        "password": "xxxxxxxx",
+        "level:" : "1" //优先级
+    }, // 0<1 所以优先使用cas登录 所以0比1大 数学天才
     "time": {
         "XueNian": "2024",//所选课程所在的学年学期，如2024-2025-1
         "XueQi": "1"
@@ -56,8 +62,7 @@ go build
 }
 ```
 
-- ~~统一认证登录，打爆土豆服务器~~
-- ~~2024.12.31 统一认证登录教务真就爆了~~
+- ~~HDU你的登录方式换来换去很不错~~
 - <img src="./Doc/img/香草蛋糕.jpg" width="100" height="100" alt="huohuo">
 
 3. 选课
@@ -68,7 +73,7 @@ go build
 >
 > 需在任务落实查询开放后，并在选课之前（省去在选课时查询课程请求）执行一次可执行文件获取课程信息
 
-- 保证可执行文件和config.json在同一级目录下，然后执行可执行文件即可
+- 保证可执行文件和config.json在同一级目录下，然后在开始前几分钟执行可执行文件即可
 
 ## 协议
 
