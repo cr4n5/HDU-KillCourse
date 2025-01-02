@@ -43,6 +43,11 @@ go build
         "password": "xxxxxxxx",
         "level:" : "1" //优先级
     }, // 0<1 所以优先使用cas登录 所以0比1大 数学天才
+    "cookies": {
+        "JSESSIONID": "",// 每次登录两个cookie参数都会自动更新
+        "route": "",
+        "enabled": "1"//如若登录过期，将enabled改为0，将不会使用cookies登录
+    },
     "time": {
         "XueNian": "2024",//所选课程所在的学年学期，如2024-2025-1
         "XueQi": "1"
@@ -58,7 +63,6 @@ go build
     },
     //课程按顺序执行
     "start_time": "2024-07-25 12:00:00",//程序开始时间
-    "ClientBodyConfigEnabled": "0"//默认
 }
 ```
 

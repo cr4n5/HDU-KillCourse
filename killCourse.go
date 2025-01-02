@@ -61,7 +61,7 @@ func GetDoJxbId(c *client.Client, KchId string, JxbId string, Kklxdm string, Njd
 }
 
 // SelectCourse 选课
-func SelectCourse(c *client.Client, JxbIds string, KchId string, Kklxdm string, Jxbzc string) error {
+func SelectCourse(c *client.Client, JxbIds string, KchId string, Kklxdm string, Jxbzc string, cfg *config.Config) error {
 	// 设置请求参数
 	req := &client.SelectCourseReq{
 		JxbIDs: JxbIds,
@@ -71,8 +71,15 @@ func SelectCourse(c *client.Client, JxbIds string, KchId string, Kklxdm string, 
 
 	// 若为主修课程
 	if Kklxdm == "01" {
-		req.NjdmID = "20" + Jxbzc[0:2]
-		req.ZyhID = Jxbzc[2:6]
+		if cfg.DontTouchForDebug == "1" {
+			// req.NjdmID = "20" + Jxbzc[0:2]
+			// req.ZyhID = Jxbzc[2:6]
+			req.NjdmID = "20" + Jxbzc[len(Jxbzc)-8:len(Jxbzc)-6]
+			req.ZyhID = Jxbzc[len(Jxbzc)-6 : len(Jxbzc)-2]
+		} else {
+			req.NjdmID = "20" + c.ClientBodyConfig.BhId[0:2]
+			req.ZyhID = c.ClientBodyConfig.BhId[2:6]
+		}
 	}
 
 	// 发送请求
@@ -160,7 +167,7 @@ func HandleCourse(c *client.Client, cfg *config.Config, course *config.Course, C
 
 			// 选课
 			if SelectFlag == "1" {
-				err = SelectCourse(c, doJxbId, v.KchID, Kklxdm, v.Jxbzc)
+				err = SelectCourse(c, doJxbId, v.KchID, Kklxdm, v.Jxbzc, cfg)
 				if err != nil {
 					return err
 				}

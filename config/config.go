@@ -21,13 +21,19 @@ type Config struct {
 		Password string `json:"password"`
 		Level    string `json:"level"`
 	} `json:"newjw_login"`
+	Cookies struct {
+		JSESSIONID string `json:"JSESSIONID"`
+		Route      string `json:"route"`
+		Enabled    string `json:"enabled"`
+	} `json:"cookies"`
 	Time struct {
 		XueNian string `json:"XueNian"`
 		XueQi   string `json:"XueQi"`
 	} `json:"time"`
 	Course                  *orderedmap.OrderedMap `json:"course"`
 	StartTime               string                 `json:"start_time"`
-	ClientBodyConfigEnabled string                 `json:"ClientBodyConfigEnabled"`
+	ClientBodyConfigEnabled string                 `json:"ClientBodyConfigEnabled,omitempty"`
+	DontTouchForDebug       string                 `json:"DontTouchForDebug,omitempty"`
 }
 
 // Course 课程信息结构体
@@ -127,6 +133,22 @@ func SaveCourse(course *Course) error {
 
 	// 保存课程信息
 	if err := os.WriteFile("course.json", bytes, 0666); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SaveConfig 保存配置文件
+func SaveConfig(cfg *Config) error {
+	// 转换为json
+	bytes, err := json.MarshalIndent(cfg, "", "    ")
+	if err != nil {
+		return err
+	}
+
+	// 保存配置文件
+	if err := os.WriteFile("config.json", bytes, 0666); err != nil {
 		return err
 	}
 

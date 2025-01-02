@@ -2,11 +2,12 @@ package main
 
 import (
 	"errors"
+	"strings"
+
 	"github.com/cr4n5/HDU-KillCourse/client"
 	"github.com/cr4n5/HDU-KillCourse/config"
 	"github.com/cr4n5/HDU-KillCourse/log"
 	"github.com/cr4n5/HDU-KillCourse/util"
-	"strings"
 )
 
 // NewjwLogin newjw登录
@@ -30,14 +31,13 @@ func NewjwLogin(c *client.Client, cfg *config.Config) error {
 	if err != nil {
 		return err
 	}
-	cfg.NewjwLogin.Password = encryptedPassword
 
 	log.Info("正在登录...")
 	// 登录
 	loginReq := &client.LoginReq{
 		Csrftoken: csrftoken,
 		Username:  cfg.NewjwLogin.Username,
-		Password:  cfg.NewjwLogin.Password,
+		Password:  encryptedPassword,
 	}
 	result, err := c.NewjwLoginPost(loginReq)
 	if err != nil {
@@ -66,7 +66,6 @@ func CasLogin(c *client.Client, cfg *config.Config) error {
 	if err != nil {
 		return err
 	}
-	cfg.CasLogin.Password = encryptedPassword
 
 	log.Info("正在cas登录...")
 	// cas登录
@@ -78,7 +77,7 @@ func CasLogin(c *client.Client, cfg *config.Config) error {
 		Execution:   execution,
 		CaptchaCode: "",
 		Croypto:     croypto,
-		Password:    cfg.CasLogin.Password,
+		Password:    encryptedPassword,
 	}
 	result, err := c.CasLoginPost(casLoginReq)
 	if err != nil {
@@ -107,6 +106,17 @@ func CasLogin(c *client.Client, cfg *config.Config) error {
 func Login(cfg *config.Config) (*client.Client, error) {
 	// 创建一个新的客户端
 	c := client.NewClient(cfg)
+
+	// 使用保存的cookies登录
+	if cfg.Cookies.JSESSIONID != "" && cfg.Cookies.Route != "" && cfg.Cookies.Enabled == "1" {
+		log.Info("正在使用保存的cookies登录...")
+		err := c.LoadCookies(cfg)
+		if err != nil {
+			return nil, err
+		}
+		log.Info(log.ErrorColor("Notice！: 若登录过期，将cookies.enabled置为0，重新登录"))
+		return c, nil
+	}
 
 	// 根据Level优先级登录
 	if cfg.CasLogin.Level < cfg.NewjwLogin.Level {
@@ -141,6 +151,12 @@ func Login(cfg *config.Config) (*client.Client, error) {
 				return nil, err
 			}
 		}
+	}
+
+	// 保存cookies
+	err := c.SaveCookies(cfg)
+	if err != nil {
+		return nil, err
 	}
 
 	return c, nil
