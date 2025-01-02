@@ -3,8 +3,10 @@ package config
 import (
 	"encoding/json"
 	"errors"
-	"github.com/cr4n5/HDU-KillCourse/log"
 	"os"
+
+	"github.com/cr4n5/HDU-KillCourse/log"
+	"github.com/iancoleman/orderedmap"
 )
 
 // Config 配置文件结构体
@@ -23,9 +25,9 @@ type Config struct {
 		XueNian string `json:"XueNian"`
 		XueQi   string `json:"XueQi"`
 	} `json:"time"`
-	Course                  map[string]string `json:"course"`
-	StartTime               string            `json:"start_time"`
-	ClientBodyConfigEnabled string            `json:"ClientBodyConfigEnabled"`
+	Course                  *orderedmap.OrderedMap `json:"course"`
+	StartTime               string                 `json:"start_time"`
+	ClientBodyConfigEnabled string                 `json:"ClientBodyConfigEnabled"`
 }
 
 // Course 课程信息结构体
@@ -70,7 +72,7 @@ func (cfg *Config) Validate() error {
 	if cfg.Time.XueNian == "" || cfg.Time.XueQi == "" {
 		return errors.New("学年或学期为空")
 	}
-	if len(cfg.Course) == 0 {
+	if cfg.Course == nil {
 		return errors.New("课程为空")
 	}
 	if cfg.StartTime == "" {
@@ -90,7 +92,8 @@ func (cfg *Config) Validate() error {
 	log.Info("XueQi: ", cfg.Time.XueQi)
 	log.Info("StartTime: ", cfg.StartTime)
 	log.Info("Course:")
-	for k, v := range cfg.Course {
+	for _, k := range cfg.Course.Keys() {
+		v, _ := cfg.Course.Get(k)
 		log.Info(k, ": ", v)
 	}
 

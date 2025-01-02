@@ -5,6 +5,7 @@ go 1.23
 require (
 	github.com/antchfx/htmlquery v1.3.3
 	github.com/fatih/color v1.18.0
+	github.com/iancoleman/orderedmap v0.3.0
 	golang.org/x/net v0.7.0
 )
 

@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"os"
+	"time"
+
 	"github.com/cr4n5/HDU-KillCourse/client"
 	"github.com/cr4n5/HDU-KillCourse/config"
 	"github.com/cr4n5/HDU-KillCourse/log"
-	"os"
-	"time"
 )
 
 // killcourse完成
@@ -117,7 +118,7 @@ func CancelCourse(c *client.Client, JxbIds string, KchId string, XueNian string,
 }
 
 // HandleCourse 处理课程
-func HandleCourse(c *client.Client, cfg *config.Config, course *config.Course, CourseName string, SelectFlag string) error {
+func HandleCourse(c *client.Client, cfg *config.Config, course *config.Course, CourseName string, SelectFlag interface{}) error {
 	for _, v := range course.Items {
 		if v.Jxbmc == CourseName {
 			// 更改Kklxdm
@@ -224,7 +225,8 @@ func KillCourse(ctx context.Context, c *client.Client, cfg *config.Config, cours
 				}
 				log.Info("选课配置获取成功")
 				// 选退课
-				for k, v := range cfg.Course {
+				for _, k := range cfg.Course.Keys() {
+					v, _ := cfg.Course.Get(k)
 					// 处理课程
 					log.Info("----------------------------------------")
 					log.Info("正在处理课程: ", k)
