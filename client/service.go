@@ -17,7 +17,7 @@ func (c *Client) GetCsrftoken() (string, error) {
 	login_url := "https://newjw.hdu.edu.cn/jwglxt/xtgl/login_slogin.html"
 
 	// 获取csrftoken
-	result, err := c.Get(login_url)
+	result, _, err := c.Get(login_url)
 	if err != nil {
 		return "", err
 	}
@@ -39,7 +39,7 @@ func (c *Client) GetCsrftoken() (string, error) {
 
 // GetCasLoginConfig 获取cas登录配置
 func (c *Client) GetCasLoginConfig() (execution string, croypto string, err error) {
-	result, err := c.Get("https://sso.hdu.edu.cn/login")
+	result, _, err := c.Get("https://sso.hdu.edu.cn/login")
 	if err != nil {
 		return "", "", err
 	}
@@ -73,7 +73,7 @@ func (c *Client) CasLoginPost(req *CasLoginReq) (string, error) {
 	login_url := "https://sso.hdu.edu.cn/login"
 	// 登录
 	formData := req.ToFormData()
-	result, err := c.Post(login_url, formData.Encode())
+	result, _, err := c.Post(login_url, formData.Encode())
 	if err != nil {
 		return "", err
 	}
@@ -85,7 +85,7 @@ func (c *Client) CasLoginPost(req *CasLoginReq) (string, error) {
 func (c *Client) CasLoginNewjw() (string, error) {
 	new_jw := "https://newjw.hdu.edu.cn/sso/driot4login"
 	// 通过cas登录newjw
-	result, err := c.Get(new_jw)
+	result, _, err := c.Get(new_jw)
 	if err != nil {
 		return "", err
 	}
@@ -95,7 +95,7 @@ func (c *Client) CasLoginNewjw() (string, error) {
 
 // GetPublicKey 获取公钥
 func (c *Client) GetPublicKey() (*GetPublicKeyResp, error) {
-	result, err := c.Get(fmt.Sprintf("https://newjw.hdu.edu.cn/jwglxt/xtgl/login_getPublicKey.html?time=%d", time.Now().Unix()))
+	result, _, err := c.Get(fmt.Sprintf("https://newjw.hdu.edu.cn/jwglxt/xtgl/login_getPublicKey.html?time=%d", time.Now().Unix()))
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func (c *Client) NewjwLoginPost(req *LoginReq) (string, error) {
 	login_url := "https://newjw.hdu.edu.cn/jwglxt/xtgl/login_slogin.html"
 	// 登录
 	formData := req.ToFormData()
-	result, err := c.Post(login_url, formData.Encode())
+	result, _, err := c.Post(login_url, formData.Encode())
 	if err != nil {
 		return "", err
 	}
@@ -127,9 +127,12 @@ func (c *Client) GetCourse(req *GetCourseReq) (*GetCourseResp, error) {
 	course_url := "https://newjw.hdu.edu.cn/jwglxt/rwlscx/rwlscx_cxRwlsIndex.html?doType=query&gnmkdm=N1548"
 	// 获取课程
 	formData := req.ToFormData()
-	result, err := c.Post(course_url, formData.Encode())
+	result, _, err := c.Post(course_url, formData.Encode())
 	if err != nil {
 		return nil, err
+	}
+	if strings.Contains(string(result), "登录") {
+		return nil, errors.New("可能登录过期")
 	}
 	// 检验是否可以获取课程
 	if strings.Contains(string(result), "无功能权限") {
@@ -234,9 +237,12 @@ func (c *Client) GetClientBodyConfig() error {
 
 	url := "https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default"
 	// 获取选课配置
-	result, err := c.Get(url)
+	result, _, err := c.Get(url)
 	if err != nil {
 		return err
+	}
+	if strings.Contains(string(result), "登录") {
+		return errors.New("可能登录过期")
 	}
 	// 检验是否可以获取选课配置
 	if strings.Contains(string(result), "对不起，当前不属于选课阶段") {
@@ -260,9 +266,12 @@ func (c *Client) GetDoJxbId(req *GetDoJxbIdReq) ([]GetDoJxbIdResp, error) {
 	url := "https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512"
 	// 获取do_jxb_id
 	formData := req.ToFormData()
-	result, err := c.Post(url, formData.Encode())
+	result, _, err := c.Post(url, formData.Encode())
 	if err != nil {
 		return nil, err
+	}
+	if strings.Contains(string(result), "登录") {
+		return nil, errors.New("可能登录过期")
 	}
 	// 解析do_jxb_id
 	var doJxbIdResp []GetDoJxbIdResp
@@ -279,9 +288,12 @@ func (c *Client) SelectCourse(req *SelectCourseReq) (*SelectCourseResq, error) {
 	url := "https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzbjk_xkBcZyZzxkYzb.html?gnmkdm=N253512"
 	// 选课
 	formData := req.ToFormData()
-	result, err := c.Post(url, formData.Encode())
+	result, _, err := c.Post(url, formData.Encode())
 	if err != nil {
 		return nil, err
+	}
+	if strings.Contains(string(result), "登录") {
+		return nil, errors.New("可能登录过期")
 	}
 	// 解析选课结果
 	var selectCourseResq SelectCourseResq
@@ -298,9 +310,12 @@ func (c *Client) CancelCourse(req *CancelCourseReq) (string, error) {
 	url := "https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzb_tuikBcZzxkYzb.html?gnmkdm=N253512"
 	// 退课
 	formData := req.ToFormData()
-	result, err := c.Post(url, formData.Encode())
+	result, _, err := c.Post(url, formData.Encode())
 	if err != nil {
 		return "", err
+	}
+	if strings.Contains(string(result), "登录") {
+		return "", errors.New("可能登录过期")
 	}
 
 	return string(result), nil
