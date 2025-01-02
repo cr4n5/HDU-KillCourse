@@ -1,5 +1,10 @@
 # HDU-KillCourse
-杭电 抢课×选课√  脚本
+
+>本项目仅供学习和研究使用请于24小时内删除。使用本项目所产生的任何后果由使用者自行承担。在使用本项目之前，请确保您已充分了解相关法律法规，并确保您的行为符合所在国家或地区的法律要求。未经授权的情况下，请勿将本项目用于商业用途或其他非法用途。转载使用请标明出处。
+
+- <img src="./Doc/img/香草蛋糕.jpg" width="100" height="100" alt="huohuo">
+
+`杭电 抢课×选课√`
 
 ## 简介
 
@@ -44,7 +49,7 @@ go build
         "level:" : "1" //优先级
     }, // 0<1 所以优先使用cas登录 所以0比1大 数学天才
     "cookies": {
-        "JSESSIONID": "",// 每次登录两个cookie参数都会自动更新
+        "JSESSIONID": "",// 每次登录cookie参数都会自动更新
         "route": "",
         "enabled": "1"//如若登录过期，将enabled改为0，将不会使用cookies登录
     },
@@ -66,10 +71,7 @@ go build
 }
 ```
 
-- ~~HDU你的登录方式换来换去很不错~~
-- <img src="./Doc/img/香草蛋糕.jpg" width="100" height="100" alt="huohuo">
-
-3. 选课
+1. 选课
 
 - 选课之前，可先去<a href='https://github.com/cr4n5/HDU-course_list'>杭电课程导出</a>，排好课表，获取课程教学班名称
 
