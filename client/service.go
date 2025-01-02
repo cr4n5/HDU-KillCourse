@@ -49,8 +49,18 @@ func (c *Client) GetCasLoginConfig() (execution string, croypto string, err erro
 	if err != nil {
 		return "", "", err
 	}
-	execution = htmlquery.InnerText(htmlquery.FindOne(doc, `//*[@id="login-page-flowkey"]/text()`))
-	croypto = htmlquery.InnerText(htmlquery.FindOne(doc, `//*[@id="login-croypto"]/text()`))
+	node := htmlquery.FindOne(doc, `//*[@id="login-page-flowkey"]/text()`)
+	if node != nil {
+		execution = htmlquery.InnerText(node)
+	} else {
+		return "", "", errors.New("获取cas登录配置失败")
+	}
+	node = htmlquery.FindOne(doc, `//*[@id="login-croypto"]/text()`)
+	if node != nil {
+		croypto = htmlquery.InnerText(node)
+	} else {
+		return "", "", errors.New("获取cas登录配置失败")
+	}
 	if execution == "" || croypto == "" {
 		return "", "", errors.New("获取cas登录配置失败")
 	}
