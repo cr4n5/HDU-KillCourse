@@ -16,4 +16,4 @@ log_files/
 util/rsa_test.go
 
 # 二进制文件忽略
-HDU-KillCourse.exe
+HDU-KillCourse*
