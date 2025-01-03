@@ -67,9 +67,7 @@ go build
         "(2024-2025-1)-W0001321-06" : "0"
     },
     //课程按顺序执行
-    "start_time": "2024-07-25 12:00:00",//程序开始时间
-    "ClientBodyConfigEnabled": "0",//默认
-    "DontTouchForDebug": "0"//默认
+    "start_time": "2024-07-25 12:00:00"//程序开始时间
 }
 ```
 
