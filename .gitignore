@@ -5,6 +5,7 @@ HDU-KillCourse_Python/
 
 # 配置产生文件忽略
 config.json
+config.example copy.json
 course.json
 ClientBodyConfig.json
 

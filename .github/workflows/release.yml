@@ -19,16 +19,16 @@ jobs:
         go-version: '1.23'
 
     - name: Build for Windows
-      run: GOOS=windows GOARCH=amd64 go build -o build/main-windows-amd64-${{ github.ref_name }}.exe
+      run: GOOS=windows GOARCH=amd64 go build -o build/main-windows-amd64-${{ github.ref_name }}.exe ./cmd/HDU-KillCourse
 
     - name: Build for Linux
-      run: GOOS=linux GOARCH=amd64 go build -o build/main-linux-amd64-${{ github.ref_name }}
+      run: GOOS=linux GOARCH=amd64 go build -o build/main-linux-amd64-${{ github.ref_name }} ./cmd/HDU-KillCourse
 
     - name: Build for macOS (Intel)
-      run: GOOS=darwin GOARCH=amd64 go build -o build/main-darwin-amd64-${{ github.ref_name }}
+      run: GOOS=darwin GOARCH=amd64 go build -o build/main-darwin-amd64-${{ github.ref_name }} ./cmd/HDU-KillCourse
 
     - name: Build for macOS (Apple Silicon)
-      run: GOOS=darwin GOARCH=arm64 go build -o build/main-darwin-arm64-${{ github.ref_name }}
+      run: GOOS=darwin GOARCH=arm64 go build -o build/main-darwin-arm64-${{ github.ref_name }} ./cmd/HDU-KillCourse
 
     - name: Create Release
       id: create_release
