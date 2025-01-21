@@ -131,7 +131,7 @@ func (c *Client) GetCourse(req *GetCourseReq) (*GetCourseResp, error) {
 	if err != nil {
 		return nil, err
 	}
-	if strings.Contains(string(result), "登录") {
+	if strings.Contains(string(result), "统一身份认证") {
 		return nil, errors.New("可能登录过期")
 	}
 	// 检验是否可以获取课程
@@ -241,7 +241,7 @@ func (c *Client) GetClientBodyConfig() error {
 	if err != nil {
 		return err
 	}
-	if strings.Contains(string(result), "登录") {
+	if strings.Contains(string(result), "统一身份认证") {
 		return errors.New("可能登录过期")
 	}
 	// 检验是否可以获取选课配置
@@ -270,7 +270,7 @@ func (c *Client) GetDoJxbId(req *GetDoJxbIdReq) ([]GetDoJxbIdResp, error) {
 	if err != nil {
 		return nil, err
 	}
-	if strings.Contains(string(result), "登录") {
+	if strings.Contains(string(result), "统一身份认证") {
 		return nil, errors.New("可能登录过期")
 	}
 	// 解析do_jxb_id
@@ -292,7 +292,7 @@ func (c *Client) SelectCourse(req *SelectCourseReq) (*SelectCourseResq, error) {
 	if err != nil {
 		return nil, err
 	}
-	if strings.Contains(string(result), "登录") {
+	if strings.Contains(string(result), "统一身份认证") {
 		return nil, errors.New("可能登录过期")
 	}
 	// 解析选课结果
@@ -314,9 +314,31 @@ func (c *Client) CancelCourse(req *CancelCourseReq) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if strings.Contains(string(result), "登录") {
+	if strings.Contains(string(result), "统一身份认证") {
 		return "", errors.New("可能登录过期")
 	}
 
 	return string(result), nil
+}
+
+// SearchCourse 搜索课程
+func (c *Client) SearchCourse(req *SearchCourseReq) (*SearchCourseResp, error) {
+	url := "https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512"
+	// 搜索课程
+	formData := req.ToFormData()
+	result, _, err := c.Post(url, formData.Encode())
+	if err != nil {
+		return nil, err
+	}
+	if strings.Contains(string(result), "统一身份认证") {
+		return nil, errors.New("可能登录过期")
+	}
+	// 解析搜索结果
+	var searchCourseResp SearchCourseResp
+	err = json.Unmarshal(result, &searchCourseResp)
+	if err != nil {
+		return nil, err
+	}
+
+	return &searchCourseResp, nil
 }

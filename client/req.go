@@ -267,3 +267,27 @@ func (req *CancelCourseReq) ToFormData() url.Values {
 		"xkxqm":   {req.Xkxqm},
 	}
 }
+
+// SearchCourseReq 搜索课程请求
+type SearchCourseReq struct {
+	Xkxnm      string
+	Xkxqm      string
+	Kklxdm     string
+	Jspage     string
+	Kspage     string
+	Yllist     string // 是否有余量
+	Filterlist string // 搜索内容
+}
+
+// ToFormData 转换为表单数据
+func (req *SearchCourseReq) ToFormData() url.Values {
+	return url.Values{
+		"xkxnm":          {req.Xkxnm},
+		"xkxqm":          {req.Xkxqm},
+		"kklxdm":         {req.Kklxdm},
+		"jspage":         {req.Jspage},
+		"kspage":         {req.Kspage},
+		"yl_list[0]":     {req.Yllist},
+		"filter_list[0]": {req.Filterlist},
+	}
+}

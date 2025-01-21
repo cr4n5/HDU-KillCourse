@@ -56,14 +56,18 @@ func main() {
 	signal.Notify(stopChan, syscall.SIGINT, syscall.SIGTERM)
 
 	// 选退课
-	go KillCourse(cancelCtx, c, cfg, courses)
+	if cfg.WaitCourse.Enabled == "1" {
+		go WaitCourse(cancelCtx, c, cfg, courses)
+	} else {
+		go KillCourse(cancelCtx, c, cfg, courses)
+	}
 
 	select {
 	case <-stopChan:
 		log.Info("收到终止信号，正在退出...")
 		cancel()
 	case <-channel:
-		log.Info("退选课程已完成，正在退出...")
+		log.Info("此程序已完成，正在退出...")
 		cancel()
 	}
 }

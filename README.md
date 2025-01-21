@@ -8,7 +8,8 @@
 
 ## 简介
 
-支持主修，选修，体育课程，特殊课程
+- 支持主修，选修，体育课程，特殊课程
+- 支持蹲课
 
 > [!TIP]
 >
@@ -48,7 +49,7 @@ go build
         "password": "xxxxxxxx",
         "level:" : "1" //优先级
     }, // 0<1 所以优先使用cas登录 所以0比1大 数学天才
-    "cookies": {
+    "cookies": { //若 JSESSIONID为空 或 route为空 或 enabled为0，则将不会使用cookies登录
         "JSESSIONID": "",// 每次登录cookie参数都会自动更新
         "route": "",
         "enabled": "1"//如若登录过期，将enabled改为0，将不会使用cookies登录
@@ -65,6 +66,17 @@ go build
         "(2024-2025-1)-B2700380-02" : "0",
         "(2024-2025-1)-C2892008-02" : "1",
         "(2024-2025-1)-W0001321-06" : "0"
+    },
+    "wait_course": {
+        "interval": 60, //查询课程间隔时间，单位秒
+        "enabled": "0" //是否开启蹲课，开启后将蹲course中值为1的课程，不再进行抢课
+    }, 
+    "smtp_email": { //邮件通知，开启后将会在蹲选课成功后发送邮件通知
+        "host": "smtp.qq.com", //smtp服务器
+        "username": "...@qq.com", //发送邮件的邮箱
+        "password": "xxxxxxxx", //发送邮件的邮箱授权码
+        "to": "...@qq.com", //接收邮件的邮箱
+        "enabled": "0" //是否开启邮件通知
     },
     //课程按顺序执行
     "start_time": "2024-07-25 12:00:00",//程序开始时间

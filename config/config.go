@@ -30,10 +30,21 @@ type Config struct {
 		XueNian string `json:"XueNian"`
 		XueQi   string `json:"XueQi"`
 	} `json:"time"`
-	Course                  *orderedmap.OrderedMap `json:"course"`
-	StartTime               string                 `json:"start_time"`
-	ClientBodyConfigEnabled string                 `json:"ClientBodyConfigEnabled,omitempty"`
-	DontTouchForDebug       string                 `json:"DontTouchForDebug,omitempty"`
+	Course     *orderedmap.OrderedMap `json:"course"`
+	WaitCourse struct {
+		Interval int    `json:"interval"`
+		Enabled  string `json:"enabled"`
+	} `json:"wait_course"`
+	SmtpEmail struct {
+		Host     string `json:"host"`
+		Username string `json:"username"`
+		Password string `json:"password"`
+		To       string `json:"to"`
+		Enabled  string `json:"enabled"`
+	} `json:"smtp_email"`
+	StartTime               string `json:"start_time"`
+	ClientBodyConfigEnabled string `json:"ClientBodyConfigEnabled,omitempty"`
+	DontTouchForDebug       string `json:"DontTouchForDebug,omitempty"`
 }
 
 // Course 课程信息结构体
@@ -81,6 +92,14 @@ func (cfg *Config) Validate() error {
 	if cfg.Course == nil {
 		return errors.New("课程为空")
 	}
+	if cfg.WaitCourse.Interval == 0 || cfg.WaitCourse.Enabled == "" {
+		return errors.New("WaitCourse为空")
+	}
+	if cfg.SmtpEmail.Enabled == "1" {
+		if cfg.SmtpEmail.Host == "" || cfg.SmtpEmail.Username == "" || cfg.SmtpEmail.Password == "" || cfg.SmtpEmail.To == "" {
+			return errors.New("SmtpEmail为空")
+		}
+	}
 	if cfg.StartTime == "" {
 		return errors.New("StartTime为空")
 	}
@@ -96,6 +115,18 @@ func (cfg *Config) Validate() error {
 	log.Info("Level: ", cfg.NewjwLogin.Level)
 	log.Info("XueNian: ", cfg.Time.XueNian)
 	log.Info("XueQi: ", cfg.Time.XueQi)
+	log.Info("WaitCourse:")
+	log.Info("Interval: ", cfg.WaitCourse.Interval)
+	log.Info("Enabled: ", cfg.WaitCourse.Enabled)
+	log.Info("SmtpEmail:")
+	if cfg.SmtpEmail.Enabled == "1" {
+		log.Info("Host: ", cfg.SmtpEmail.Host)
+		log.Info("Username: ", cfg.SmtpEmail.Username)
+		log.Info("Password: ", cfg.SmtpEmail.Password)
+		log.Info("To: ", cfg.SmtpEmail.To)
+	} else {
+		log.Info("SmtpEmailEnabled: ", cfg.SmtpEmail.Enabled)
+	}
 	log.Info("StartTime: ", cfg.StartTime)
 	log.Info("Course:")
 	for _, k := range cfg.Course.Keys() {

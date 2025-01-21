@@ -26,3 +26,9 @@ type SelectCourseResq struct {
 	Flag string `json:"flag"`
 	Msg  string `json:"msg"`
 }
+
+type SearchCourseResp struct {
+	TmpList []struct {
+		Jxbmc string `json:"jxbmc"`
+	} `json:"tmpList"`
+}

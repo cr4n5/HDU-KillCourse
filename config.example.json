@@ -26,5 +26,16 @@
         "(2024-2025-1)-C2892008-02" : "1",
         "(2024-2025-1)-W0001321-06" : "0"
     },
+    "wait_course": {
+        "interval": 60,
+        "enabled": "0"
+    },
+    "smtp_email": {
+        "host": "smtp.qq.com",
+        "username": "...@qq.com",
+        "password": "xxxxxxxx",
+        "to": "...@qq.com",
+        "enabled": "0"
+    },
     "start_time": "2024-07-25 12:00:00"
 }
