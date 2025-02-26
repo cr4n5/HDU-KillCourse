@@ -2,14 +2,15 @@ package client
 
 import (
 	"fmt"
-	"github.com/cr4n5/HDU-KillCourse/config"
-	"github.com/cr4n5/HDU-KillCourse/log"
-	"github.com/cr4n5/HDU-KillCourse/vars"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
 	"strings"
+
+	"github.com/cr4n5/HDU-KillCourse/config"
+	"github.com/cr4n5/HDU-KillCourse/log"
+	"github.com/cr4n5/HDU-KillCourse/vars"
 )
 
 type ClientBodyConfig struct {
@@ -43,10 +44,15 @@ func NewClient(cfg *config.Config) *Client {
 	}
 }
 
-func (c *Client) Get(url string) ([]byte, int, error) {
+func (c *Client) Get(url string, headers map[string]string) ([]byte, int, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, 0, err
+	}
+
+	// 添加请求头
+	for key, value := range headers {
+		req.Header.Set(key, value)
 	}
 
 	resp, err := c.client.Do(req)
@@ -72,12 +78,17 @@ func (c *Client) Get(url string) ([]byte, int, error) {
 	return result, resp.StatusCode, nil
 }
 
-func (c *Client) Post(url string, formData string) ([]byte, int, error) {
+func (c *Client) Post(url string, formData string, headers map[string]string) ([]byte, int, error) {
 	req, err := http.NewRequest("POST", url, strings.NewReader(formData))
 	if err != nil {
 		return nil, 0, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	// 添加请求头
+	for key, value := range headers {
+		req.Header.Set(key, value)
+	}
 
 	resp, err := c.client.Do(req)
 	if err != nil {

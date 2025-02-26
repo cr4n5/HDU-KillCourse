@@ -32,3 +32,15 @@ type SearchCourseResp struct {
 		Jxbmc string `json:"jxbmc"`
 	} `json:"tmpList"`
 }
+
+type QrLoginIdResp struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Data    string `json:"data"`
+}
+
+type QrLoginStatusResp struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	Data    string `json:"data"`
+}

@@ -52,8 +52,8 @@ func NewjwLogin(c *client.Client, cfg *config.Config) error {
 	return nil
 }
 
-// CasLogin cas登录
-func CasLogin(c *client.Client, cfg *config.Config) error {
+// CasPassWordLogin cas使用用户名密码登录  ！不可用 需手机验证码
+func CasPassWordLogin(c *client.Client, cfg *config.Config) error {
 	log.Info("获取cas登录配置...")
 	// 获取cas登录配置
 	execution, croypto, err := c.GetCasLoginConfig()
@@ -102,6 +102,88 @@ func CasLogin(c *client.Client, cfg *config.Config) error {
 	return nil
 }
 
+// CasQrLogin cas使用钉钉扫码登录
+func CasQrLogin(c *client.Client, cfg *config.Config) error {
+	log.Info("获取cas登录配置...")
+	// 获取cas登录配置
+	execution, _, err := c.GetCasLoginConfig()
+	if err != nil {
+		return err
+	}
+
+	log.Info("正在获取QrLoginId...")
+	// 获取QrLoginId
+	qrLoginIdResp, err := c.GetQrLoginId()
+	if err != nil {
+		return err
+	}
+
+	log.Info("正在获取二维码...")
+	log.Info("请使用" + log.ErrorColor("钉钉") + "扫码登录...")
+	var qrLoginStatus *client.QrLoginStatusResp
+	for {
+		// 获取二维码
+		qrCodeBytes, err := c.GetQrCode(qrLoginIdResp.Data)
+		if err != nil {
+			return err
+		}
+		// 解析二维码
+		qrCode, err := util.QrCodeDecode(qrCodeBytes)
+		if err != nil {
+			return err
+		}
+		// 打印二维码
+		err = util.QrCodePrint(qrCode)
+		if err != nil {
+			return err
+		}
+
+		// 检查登录状态
+		qrLoginStatus, err = c.GetQrLoginStatus(qrLoginIdResp.Data)
+		if err != nil {
+			return err
+		}
+		if qrLoginStatus.Code == 200 {
+			break
+		}
+
+		// 二维码过期
+		util.ClearQrCode()
+		log.Error("二维码已过期, 请重新扫码登录")
+	}
+
+	log.Info("正在cas登录...")
+	// cas登录
+	casLoginReq := &client.CasLoginReq{
+		Username:    qrLoginStatus.Data,
+		Type:        "dingDingQr",
+		EventID:     "submit",
+		Geolocation: "",
+		Execution:   execution,
+	}
+	result, err := c.CasLoginPost(casLoginReq)
+	if err != nil {
+		return err
+	}
+	// 判断是否登录成功
+	if strings.Contains(result, "用户名密码登录") {
+		return errors.New("cas使用钉钉扫码登录失败！")
+	}
+
+	// 通过cas登录newjw
+	log.Info("正在通过cas登录newjw...")
+	result, err = c.CasLoginNewjw()
+	if err != nil {
+		return err
+	}
+	// 判断是否登录成功
+	if !strings.Contains(result, "杭州电子科技大学本科教学管理服务平台") {
+		return errors.New("未知错误, cas登录newjw失败, 请重新尝试登录")
+	}
+
+	return nil
+}
+
 // Login 根据Level优先级登录
 func Login(cfg *config.Config) (*client.Client, error) {
 	// 创建一个新的客户端
@@ -122,7 +204,7 @@ func Login(cfg *config.Config) (*client.Client, error) {
 	if cfg.CasLogin.Level < cfg.NewjwLogin.Level {
 		// cas登录
 		log.Info("正在通过cas登录...")
-		err := CasLogin(c, cfg)
+		err := CasQrLogin(c, cfg)
 		if err != nil {
 			log.Error("cas登录失败: ", err)
 			// newjw登录
@@ -145,7 +227,7 @@ func Login(cfg *config.Config) (*client.Client, error) {
 			log.Info("正在通过cas登录...")
 			// 重置client
 			c = client.NewClient(cfg)
-			err := CasLogin(c, cfg)
+			err := CasQrLogin(c, cfg)
 			if err != nil {
 				log.Error("cas登录失败: ", err)
 				return nil, err

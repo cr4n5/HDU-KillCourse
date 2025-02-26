@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"errors"
+	"time"
+
 	"github.com/cr4n5/HDU-KillCourse/client"
 	"github.com/cr4n5/HDU-KillCourse/config"
 	"github.com/cr4n5/HDU-KillCourse/log"
 	"github.com/cr4n5/HDU-KillCourse/util"
-	"time"
 )
 
 // StartWaitCourse 开始蹲课

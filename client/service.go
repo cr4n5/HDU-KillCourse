@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/antchfx/htmlquery"
+	"github.com/cr4n5/HDU-KillCourse/util"
 	"golang.org/x/net/html"
 )
 
@@ -17,7 +18,7 @@ func (c *Client) GetCsrftoken() (string, error) {
 	login_url := "https://newjw.hdu.edu.cn/jwglxt/xtgl/login_slogin.html"
 
 	// 获取csrftoken
-	result, _, err := c.Get(login_url)
+	result, _, err := c.Get(login_url, nil)
 	if err != nil {
 		return "", err
 	}
@@ -39,7 +40,7 @@ func (c *Client) GetCsrftoken() (string, error) {
 
 // GetCasLoginConfig 获取cas登录配置
 func (c *Client) GetCasLoginConfig() (execution string, croypto string, err error) {
-	result, _, err := c.Get("https://sso.hdu.edu.cn/login")
+	result, _, err := c.Get("https://sso.hdu.edu.cn/login", nil)
 	if err != nil {
 		return "", "", err
 	}
@@ -68,12 +69,74 @@ func (c *Client) GetCasLoginConfig() (execution string, croypto string, err erro
 	return execution, croypto, nil
 }
 
+// GetQrLoginId 获取二维码登录ID
+func (c *Client) GetQrLoginId() (*QrLoginIdResp, error) {
+	url := "https://sso.hdu.edu.cn/api/protected/qrlogin/loginid"
+	// 设置请求头
+	CsrfKey := util.GenerateRandomString(32)
+	CsrfValue := util.GenerateCsrfValue(CsrfKey)
+	headers := map[string]string{
+		"Csrf-Key":   CsrfKey,
+		"Csrf-Value": CsrfValue,
+	}
+	// 获取二维码登录ID
+	result, _, err := c.Get(url, headers)
+	if err != nil {
+		return nil, err
+	}
+	// 解析二维码登录ID
+	var qrLoginIdResp QrLoginIdResp
+	err = json.Unmarshal(result, &qrLoginIdResp)
+	if err != nil {
+		return nil, err
+	}
+
+	return &qrLoginIdResp, nil
+}
+
+// GetLoginQr 获取二维码
+func (c *Client) GetQrCode(id string) ([]byte, error) {
+	url := fmt.Sprintf("https://sso.hdu.edu.cn/api/public/qrlogin/qrgen/%s/dingDingQr", id)
+	// 获取二维码
+	result, _, err := c.Get(url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+// GetQrLoginStatus 获取二维码登录状态
+func (c *Client) GetQrLoginStatus(id string) (*QrLoginStatusResp, error) {
+	url := fmt.Sprintf("https://sso.hdu.edu.cn/api/protected/qrlogin/scan/%s", id)
+	// 设置请求头
+	CsrfKey := util.GenerateRandomString(32)
+	CsrfValue := util.GenerateCsrfValue(CsrfKey)
+	headers := map[string]string{
+		"Csrf-Key":   CsrfKey,
+		"Csrf-Value": CsrfValue,
+	}
+	// 获取二维码登录状态
+	result, _, err := c.Get(url, headers)
+	if err != nil {
+		return nil, err
+	}
+	// 解析二维码登录状态
+	var qrLoginStatusResp QrLoginStatusResp
+	err = json.Unmarshal(result, &qrLoginStatusResp)
+	if err != nil {
+		return nil, err
+	}
+
+	return &qrLoginStatusResp, nil
+}
+
 // CasLoginPost cas登录请求
 func (c *Client) CasLoginPost(req *CasLoginReq) (string, error) {
 	login_url := "https://sso.hdu.edu.cn/login"
 	// 登录
 	formData := req.ToFormData()
-	result, _, err := c.Post(login_url, formData.Encode())
+	result, _, err := c.Post(login_url, formData.Encode(), nil)
 	if err != nil {
 		return "", err
 	}
@@ -85,7 +148,7 @@ func (c *Client) CasLoginPost(req *CasLoginReq) (string, error) {
 func (c *Client) CasLoginNewjw() (string, error) {
 	new_jw := "https://newjw.hdu.edu.cn/sso/driot4login"
 	// 通过cas登录newjw
-	result, _, err := c.Get(new_jw)
+	result, _, err := c.Get(new_jw, nil)
 	if err != nil {
 		return "", err
 	}
@@ -95,7 +158,7 @@ func (c *Client) CasLoginNewjw() (string, error) {
 
 // GetPublicKey 获取公钥
 func (c *Client) GetPublicKey() (*GetPublicKeyResp, error) {
-	result, _, err := c.Get(fmt.Sprintf("https://newjw.hdu.edu.cn/jwglxt/xtgl/login_getPublicKey.html?time=%d", time.Now().Unix()))
+	result, _, err := c.Get(fmt.Sprintf("https://newjw.hdu.edu.cn/jwglxt/xtgl/login_getPublicKey.html?time=%d", time.Now().Unix()), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +177,7 @@ func (c *Client) NewjwLoginPost(req *LoginReq) (string, error) {
 	login_url := "https://newjw.hdu.edu.cn/jwglxt/xtgl/login_slogin.html"
 	// 登录
 	formData := req.ToFormData()
-	result, _, err := c.Post(login_url, formData.Encode())
+	result, _, err := c.Post(login_url, formData.Encode(), nil)
 	if err != nil {
 		return "", err
 	}
@@ -127,7 +190,7 @@ func (c *Client) GetCourse(req *GetCourseReq) (*GetCourseResp, error) {
 	course_url := "https://newjw.hdu.edu.cn/jwglxt/rwlscx/rwlscx_cxRwlsIndex.html?doType=query&gnmkdm=N1548"
 	// 获取课程
 	formData := req.ToFormData()
-	result, _, err := c.Post(course_url, formData.Encode())
+	result, _, err := c.Post(course_url, formData.Encode(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -237,7 +300,7 @@ func (c *Client) GetClientBodyConfig() error {
 
 	url := "https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default"
 	// 获取选课配置
-	result, _, err := c.Get(url)
+	result, _, err := c.Get(url, nil)
 	if err != nil {
 		return err
 	}
@@ -266,7 +329,7 @@ func (c *Client) GetDoJxbId(req *GetDoJxbIdReq) ([]GetDoJxbIdResp, error) {
 	url := "https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzbjk_cxJxbWithKchZzxkYzb.html?gnmkdm=N253512"
 	// 获取do_jxb_id
 	formData := req.ToFormData()
-	result, _, err := c.Post(url, formData.Encode())
+	result, _, err := c.Post(url, formData.Encode(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -288,7 +351,7 @@ func (c *Client) SelectCourse(req *SelectCourseReq) (*SelectCourseResq, error) {
 	url := "https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzbjk_xkBcZyZzxkYzb.html?gnmkdm=N253512"
 	// 选课
 	formData := req.ToFormData()
-	result, _, err := c.Post(url, formData.Encode())
+	result, _, err := c.Post(url, formData.Encode(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -310,7 +373,7 @@ func (c *Client) CancelCourse(req *CancelCourseReq) (string, error) {
 	url := "https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzb_tuikBcZzxkYzb.html?gnmkdm=N253512"
 	// 退课
 	formData := req.ToFormData()
-	result, _, err := c.Post(url, formData.Encode())
+	result, _, err := c.Post(url, formData.Encode(), nil)
 	if err != nil {
 		return "", err
 	}
@@ -326,7 +389,7 @@ func (c *Client) SearchCourse(req *SearchCourseReq) (*SearchCourseResp, error) {
 	url := "https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbPartDisplay.html?gnmkdm=N253512"
 	// 搜索课程
 	formData := req.ToFormData()
-	result, _, err := c.Post(url, formData.Encode())
+	result, _, err := c.Post(url, formData.Encode(), nil)
 	if err != nil {
 		return nil, err
 	}
