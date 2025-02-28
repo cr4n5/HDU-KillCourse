@@ -2,6 +2,7 @@
     "cas_login": {
         "username": "2201xxxx",
         "password": "xxxxxxxx",
+        "dingDingQrLoginEnabled": "0",
         "level": "0"
     },
     "newjw_login": {

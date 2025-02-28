@@ -12,9 +12,6 @@ import (
 	"github.com/cr4n5/HDU-KillCourse/log"
 )
 
-// killcourse完成
-var channel = make(chan string)
-
 // GetDoJxbId 获取doJxbId
 func GetDoJxbId(c *client.Client, KchId string, JxbId string, Kklxdm string, NjdmId string, XueNian string, Xqm string) (string, error) {
 	// 检查c.ClientBodyConfig是否为nil，测试用

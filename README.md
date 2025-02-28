@@ -10,7 +10,7 @@
 
 - 支持主修，选修，体育课程，特殊课程
 - 支持蹲课
-- 最近更新时间：2025.2.26
+- 最近更新时间：2025.3.1
 
 > [!TIP]
 >
@@ -41,8 +41,9 @@ go build
 ```
 {
     "cas_login": {
-        "username": "2201xxxx",//不必理会，cas使用钉钉扫码登录   --更新于2025.2.26
+        "username": "2201xxxx",//杭电统一身份认证账号密码
         "password": "xxxxxxxx",
+        "dingDingQrLoginEnabled": "0",//置1使用钉钉扫码登录   默认使用账号密码登录
         "level:" : "0" //优先级
     },
     "newjw_login": {

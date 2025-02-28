@@ -204,7 +204,12 @@ func Login(cfg *config.Config) (*client.Client, error) {
 	if cfg.CasLogin.Level < cfg.NewjwLogin.Level {
 		// cas登录
 		log.Info("正在通过cas登录...")
-		err := CasQrLogin(c, cfg)
+		var err error
+		if cfg.CasLogin.DingDingQrLoginEnabled == "1" {
+			err = CasQrLogin(c, cfg)
+		} else {
+			err = CasPassWordLogin(c, cfg)
+		}
 		if err != nil {
 			log.Error("cas登录失败: ", err)
 			// newjw登录
@@ -227,7 +232,12 @@ func Login(cfg *config.Config) (*client.Client, error) {
 			log.Info("正在通过cas登录...")
 			// 重置client
 			c = client.NewClient(cfg)
-			err := CasQrLogin(c, cfg)
+			var err error
+			if cfg.CasLogin.DingDingQrLoginEnabled == "1" {
+				err = CasQrLogin(c, cfg)
+			} else {
+				err = CasPassWordLogin(c, cfg)
+			}
 			if err != nil {
 				log.Error("cas登录失败: ", err)
 				return nil, err

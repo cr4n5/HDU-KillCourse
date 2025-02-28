@@ -12,6 +12,9 @@ import (
 	"github.com/cr4n5/HDU-KillCourse/vars"
 )
 
+// 程序结束信号
+var channel = make(chan string)
+
 func main() {
 	// 用于结束程序
 	defer func() {

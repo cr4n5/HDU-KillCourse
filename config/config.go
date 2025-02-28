@@ -12,9 +12,10 @@ import (
 // Config 配置文件结构体
 type Config struct {
 	CasLogin struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-		Level    string `json:"level"`
+		Username               string `json:"username"`
+		Password               string `json:"password"`
+		DingDingQrLoginEnabled string `json:"dingDingQrLoginEnabled"`
+		Level                  string `json:"level"`
 	} `json:"cas_login"`
 	NewjwLogin struct {
 		Username string `json:"username"`
@@ -105,34 +106,41 @@ func (cfg *Config) Validate() error {
 	}
 
 	// 打印配置文件
-	log.Info("CasLogin:")
-	log.Info("Username: ", cfg.CasLogin.Username)
-	log.Info("Password: ", cfg.CasLogin.Password)
-	log.Info("Level: ", cfg.CasLogin.Level)
-	log.Info("NewjwLogin:")
-	log.Info("Username: ", cfg.NewjwLogin.Username)
-	log.Info("Password: ", cfg.NewjwLogin.Password)
-	log.Info("Level: ", cfg.NewjwLogin.Level)
-	log.Info("XueNian: ", cfg.Time.XueNian)
-	log.Info("XueQi: ", cfg.Time.XueQi)
-	log.Info("WaitCourse:")
-	log.Info("Interval: ", cfg.WaitCourse.Interval)
-	log.Info("Enabled: ", cfg.WaitCourse.Enabled)
-	log.Info("SmtpEmail:")
+	// 空行
+	log.Info("")
+
+	log.Info(log.InfoColor("CasLogin:"))
+	log.Info("  Username: ", cfg.CasLogin.Username)
+	log.Info("  Password: ", cfg.CasLogin.Password)
+	log.Info("  DingDingQrLoginEnabled: ", cfg.CasLogin.DingDingQrLoginEnabled)
+	log.Info("  Level: ", cfg.CasLogin.Level)
+	log.Info(log.InfoColor("NewjwLogin:"))
+	log.Info("  Username: ", cfg.NewjwLogin.Username)
+	log.Info("  Password: ", cfg.NewjwLogin.Password)
+	log.Info("  Level: ", cfg.NewjwLogin.Level)
+	log.Info(log.InfoColor("XueNian: "), cfg.Time.XueNian)
+	log.Info(log.InfoColor("XueQi: "), cfg.Time.XueQi)
+	log.Info(log.InfoColor("WaitCourse:"))
+	log.Info("  Interval: ", cfg.WaitCourse.Interval)
+	log.Info("  Enabled: ", cfg.WaitCourse.Enabled)
+	log.Info(log.InfoColor("SmtpEmail:"))
 	if cfg.SmtpEmail.Enabled == "1" {
-		log.Info("Host: ", cfg.SmtpEmail.Host)
-		log.Info("Username: ", cfg.SmtpEmail.Username)
-		log.Info("Password: ", cfg.SmtpEmail.Password)
-		log.Info("To: ", cfg.SmtpEmail.To)
+		log.Info("  Host: ", cfg.SmtpEmail.Host)
+		log.Info("  Username: ", cfg.SmtpEmail.Username)
+		log.Info("  Password: ", cfg.SmtpEmail.Password)
+		log.Info("  To: ", cfg.SmtpEmail.To)
 	} else {
-		log.Info("SmtpEmailEnabled: ", cfg.SmtpEmail.Enabled)
+		log.Info("  SmtpEmailEnabled: ", cfg.SmtpEmail.Enabled)
 	}
-	log.Info("StartTime: ", cfg.StartTime)
-	log.Info("Course:")
+	log.Info(log.InfoColor("StartTime: "), cfg.StartTime)
+	log.Info(log.InfoColor("Course:"))
 	for _, k := range cfg.Course.Keys() {
 		v, _ := cfg.Course.Get(k)
 		log.Info(k, ": ", v)
 	}
+
+	// 空行
+	log.Info("")
 
 	return nil
 }
