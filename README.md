@@ -93,7 +93,7 @@ go build
 }
 ```
 
-1. 选课
+3. 选课
 
 - 选课之前，可先去<a href='https://github.com/cr4n5/HDU-course_list'>杭电课程导出</a>，排好课表，获取课程教学班名称
 
