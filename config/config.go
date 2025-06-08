@@ -45,7 +45,7 @@ type Config struct {
 	} `json:"smtp_email"`
 	StartTime               string `json:"start_time"`
 	ClientBodyConfigEnabled string `json:"ClientBodyConfigEnabled,omitempty"`
-	DontTouchForDebug       string `json:"DontTouchForDebug,omitempty"`
+	CrossGrade              string `json:"CrossGrade,omitempty"`
 }
 
 // Course 课程信息结构体
@@ -79,6 +79,64 @@ func InitCfg() (*Config, error) {
 		return nil, err
 	}
 
+	return &cfg, nil
+}
+
+// 默认配置文件
+var DefaultConfig = `{
+    "cas_login": {
+        "username": "2201xxxx",
+        "password": "xxxxxxxx",
+        "dingDingQrLoginEnabled": "0",
+        "level": "0"
+    },
+    "newjw_login": {
+        "username": "2201xxxx",
+        "password": "xxxxxxxx",
+        "level": "1"
+    },
+    "cookies": {
+        "JSESSIONID": "",
+        "route": "",
+        "enabled": "1"
+    },
+    "time": {
+        "XueNian": "2024",
+        "XueQi": "1"
+    },
+    "course": {
+        "(2024-2025-1)-C2092011-01" : "1"
+    },
+    "wait_course": {
+        "interval": 60,
+        "enabled": "0"
+    },
+    "smtp_email": {
+        "host": "smtp.qq.com",
+        "username": "...@qq.com",
+        "password": "xxxxxxxx",
+        "to": "...@qq.com",
+        "enabled": "0"
+    },
+    "start_time": "2024-07-25 12:00:00"
+}`
+
+// LoadConfig 加载配置文件  用于在线编辑配置
+func LoadConfig() (*Config, error) {
+	// 读取配置文件
+	bytes, err := os.ReadFile("config.json")
+	if err != nil {
+		log.Error("读取配置文件失败: ", err)
+		log.Info("使用默认配置文件")
+		// 如果读取失败，则使用默认配置文件
+		bytes = []byte(DefaultConfig)
+	}
+	// 解析配置文件
+	var cfg Config
+	if err := json.Unmarshal(bytes, &cfg); err != nil {
+		log.Error("解析配置文件失败: ", err)
+		return nil, err
+	}
 	return &cfg, nil
 }
 

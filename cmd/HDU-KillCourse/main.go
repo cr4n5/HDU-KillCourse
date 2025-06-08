@@ -6,10 +6,12 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/cr4n5/HDU-KillCourse/config"
 	"github.com/cr4n5/HDU-KillCourse/log"
 	"github.com/cr4n5/HDU-KillCourse/vars"
+	"github.com/cr4n5/HDU-KillCourse/web"
 )
 
 // 程序结束信号
@@ -24,6 +26,27 @@ func main() {
 	ctx := context.Background()
 
 	vars.ShowPortal()
+
+	// 5秒倒计时，用户可以选择是否进入 Web 编辑配置模式
+	log.Info("按下 Enter 跳过进入 Web 编辑配置模式，5秒后自动进入...")
+	enterChan := make(chan bool)
+	go func() {
+		fmt.Scanln()
+		enterChan <- true
+	}()
+
+	select {
+	case <-enterChan:
+		log.Info("跳过 Web 编辑配置模式...")
+	case <-time.After(5 * time.Second):
+		log.Info("进入 Web 编辑配置模式...")
+		err := web.StartWebServer()
+		if err != nil {
+			log.Error("Web服务器启动失败: ", err)
+			return
+		}
+		return
+	}
 
 	// 读取配置文件
 	log.Info("开始读取配置文件...")

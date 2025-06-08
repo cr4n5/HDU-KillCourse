@@ -53,7 +53,7 @@ func GetDoJxbId(c *client.Client, KchId string, JxbId string, Kklxdm string, Njd
 		}
 	}
 
-	return "", errors.New("doJxbId不存在")
+	return "", errors.New("doJxbId不存在，未查询到该课程")
 
 }
 
@@ -68,7 +68,7 @@ func SelectCourse(c *client.Client, JxbIds string, KchId string, Kklxdm string, 
 
 	// 若为主修课程
 	if Kklxdm == "01" {
-		if cfg.DontTouchForDebug == "1" {
+		if cfg.CrossGrade == "1" {
 			// req.NjdmID = "20" + Jxbzc[0:2]
 			// req.ZyhID = Jxbzc[2:6]
 			req.NjdmID = "20" + Jxbzc[len(Jxbzc)-8:len(Jxbzc)-6]

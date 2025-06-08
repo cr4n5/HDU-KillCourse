@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HDU-KillCourse 配置编辑</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="password"], input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>HDU-KillCourse 配置编辑</h1>
+
+    <div class="container">
+        <form id="configForm">
+            <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+                <h1 style="margin: 0;">CAS 登录</h1>
+                <label for="casPriority" style="margin: 0;">
+                    <input type="checkbox" id="casPriority" name="priority" onclick="togglePriority('casPriority')" checked>
+                    CAS 登录优先
+                </label>
+            </div>
+            <div class="form-group" id="casLoginGroup" style="display: block;">
+                <div class="form-group">
+                    <label for="casUsername">CAS 登录账号</label>
+                    <input type="text" id="casUsername" name="casUsername" value="2201xxxx">
+                </div>
+                <div class="form-group">
+                    <label for="casPassword">CAS 登录密码</label>
+                    <input type="text" id="casPassword" name="casPassword" value="xxxxxxxx">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="dingDingQrLoginEnabled">
+                    <input type="checkbox" id="dingDingQrLoginEnabled" name="dingDingQrLoginEnabled" onclick="toggleCasLoginVisibility()">
+                    启用钉钉二维码登录（！注意：将取消账号密码登录）
+                </label>
+            </div>
+
+            <hr style="border: 1px solid #ccc; margin: 20px 0;">
+
+            <div class="form-group" id="newJwGroup" style="display: block;">
+                <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+                    <h1 style="margin: 0;">NewJW 登录</h1>
+                    <label for="newjwPriority" style="margin: 0;">
+                        <input type="checkbox" id="newjwPriority" name="priority" onclick="togglePriority('newjwPriority')">
+                        NewJW 登录优先
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="newjwUsername">NewJW 登录账号</label>
+                    <input type="text" id="newjwUsername" name="newjwUsername" value="2201xxxx">
+                </div>
+                <div class="form-group">
+                    <label for="newjwPassword">NewJW 登录密码</label>
+                    <input type="text" id="newjwPassword" name="newjwPassword" value="xxxxxxxx">
+                </div>
+
+                <hr style="border: 1px solid #ccc; margin: 20px 0;">
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+                <h1 style="margin: 0;">Cookies 设置</h1>
+                <label for="cookiesEnabled" style="margin: 0;">
+                    <input type="checkbox" id="cookiesEnabled" name="cookiesEnabled" checked>
+                    启用 Cookies
+                </label>
+            </div>
+
+            <hr style="border: 1px solid #ccc; margin: 20px 0;">
+
+            <div class="form-group">
+                <h1 style="text-align: left;">学年学期设置</h1>
+                <h3>! 注意：为所选课程所在的学年学期，如2024-2025-1</h3>
+                <label for="xueNian">学年</label>
+                <input type="text" id="xueNian" name="xueNian" value="2024">
+            </div>
+            <div class="form-group">
+                <label for="xueQi">学期</label>
+                <input type="number" id="xueQi" name="xueQi" value="1">
+            </div>
+
+            <hr style="border: 1px solid #ccc; margin: 20px 0;">
+
+            <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+                <h1 style="margin: 0;">课程设置</h1>
+                <label for="addCourse" style="margin: 0;">
+                    <button type="button" id="addCourse" onclick="addCourseRow()" style="padding: 5px 10px; font-size: 14px;">新增课程</button>
+                </label>
+            </div>
+            <h3> ! 注意：课程按顺序执行</h3>
+            <div class="form-group">
+                <div id="courseContainer">
+                    <!-- 示例课程行 -->
+                    <div class="course-row" style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <input type="text" class="course-input" value="(2024-2025-1)-C2092011-01" style="flex: 1; margin-right: 10px;">
+                        <label style="margin-right: 10px;">
+                            <input type="checkbox" class="course-checkbox" checked>
+                            打勾为选课,反之退课
+                        </label>
+                        <button type="button" onclick="deleteCourseRow(this)" style="padding: 5px 10px; font-size: 14px; width: auto;">删除</button>
+                    </div>
+                </div>
+            </div>
+
+            <hr style="border: 1px solid #ccc; margin: 20px 0;">
+
+            <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+                <h1 style="margin: 0;">蹲课设置</h1>
+                <h3>! 注意：开启后将蹲课程列表中打勾的课程，不再进行抢课</h3>
+                <label for="waitCoursePriority" style="margin: 0;">
+                    <input type="checkbox" id="waitCoursePriority" name="priority" onclick="toggleIntervalVisibility()">
+                    启用蹲课
+                </label>
+            </div>
+            <div class="form-group" id="intervalGroup" style="display: none;">
+                <label for="interval">查询课程间隔时间，单位秒</label>
+                <input type="text" id="interval" name="interval" value="60">
+            </div>
+
+            <hr style="border: 1px solid #ccc; margin: 20px 0;">
+
+            <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+                <h1 style="margin: 0;">SMTP 配置</h1>
+                <label for="smtpEnabled" style="margin: 0;">
+                    <input type="checkbox" id="smtpEnabled" name="smtpEnabled" onclick="toggleSmtpVisibility()">
+                    启用 SMTP
+                </label>
+            </div>
+            <div class="form-group" id="smtpGroup" style="display: none;">
+                <div class="form-group">
+                    <label for="smtpHost">SMTP 服务器地址</label>
+                    <input type="text" id="smtpHost" name="smtpHost" value="smtp.qq.com">
+                </div>
+                <div class="form-group">
+                    <label for="smtpUsername">SMTP 用户名</label>
+                    <input type="text" id="smtpUsername" name="smtpUsername" value="...@qq.com">
+                </div>
+                <div class="form-group">
+                    <label for="smtpPassword">SMTP 密码</label>
+                    <input type="text" id="smtpPassword" name="smtpPassword" value="xxxxxxxx">
+                </div>
+                <div class="form-group">
+                    <label for="smtpTo">发送目标邮箱</label>
+                    <input type="text" id="smtpTo" name="smtpTo" value="...@qq.com">
+                </div>
+            </div>
+
+            <hr style="border: 1px solid #ccc; margin: 20px 0;">
+
+            <div class="form-group" id="startTimeGroup" style="display: block;">
+                <div class="form-group">
+                    <h1 style="text-align: left;">开始时间设置</h1>
+                    <label for="startTime">开始时间 (格式: YYYY-MM-DD HH:mm:ss)</label>
+                    <input type="text" id="startTime" name="startTime" value="2024-07-25 12:00:00">
+                </div>
+
+                <hr style="border: 1px solid #ccc; margin: 20px 0;">
+            </div>
+
+            <button type="button" onclick="submitConfig()">保存配置</button>
+        </form>
+    </div>
+    <div class="footer">
+        © 2025 HDU-KillCourse 配置编辑
+    </div>
+
+    <script>
+        // 课程设置  添加行课程
+        function addCourseRow() {
+            const courseContainer = document.getElementById('courseContainer');
+            const newRow = document.createElement('div');
+            newRow.className = 'course-row';
+            newRow.style = 'display: flex; align-items: center; margin-bottom: 10px;';
+            newRow.innerHTML = `
+                <input type="text" class="course-input" placeholder="输入课程编号" style="flex: 1; margin-right: 10px;">
+                <label  style="margin-right: 10px;">
+                    <input type="checkbox" class="course-checkbox" checked>
+                    打勾为选课  反之退课
+                </label>
+                <button type="button" onclick="deleteCourseRow(this)" style="padding: 5px 10px; font-size: 14px; width: auto;">删除</button>
+            `;
+            courseContainer.appendChild(newRow);
+        }
+
+        // 删除课程行
+        function deleteCourseRow(button) {
+            const row = button.parentElement; // 获取当前行
+            row.remove(); // 删除当前行
+        }
+
+        // cas 和 NewJW 登录优先级切换
+        function togglePriority(selectedId) {
+            const casPriority = document.getElementById('casPriority');
+            const newjwPriority = document.getElementById('newjwPriority');
+
+            if (selectedId === 'casPriority') {
+                casPriority.checked = true;
+                newjwPriority.checked = false;
+            } else if (selectedId === 'newjwPriority') {
+                newjwPriority.checked = true;
+                casPriority.checked = false;
+            }
+        }
+
+        // cas 登录设置  显示或隐藏账号密码输入框
+        function toggleCasLoginVisibility() {
+            const dingDingQrLoginEnabled = document.getElementById('dingDingQrLoginEnabled');
+            const casLoginGroup = document.getElementById('casLoginGroup');
+            casLoginGroup.style.display = dingDingQrLoginEnabled.checked ? 'none' : 'block';
+            const newJwGroup = document.getElementById('newJwGroup');
+            newJwGroup.style.display = dingDingQrLoginEnabled.checked ? 'none' : 'block';
+        }
+
+        // 蹲课设置  显示或隐藏间隔时间输入框
+        function toggleIntervalVisibility() {
+            const waitCoursePriority = document.getElementById('waitCoursePriority');
+            const intervalGroup = document.getElementById('intervalGroup');
+            intervalGroup.style.display = waitCoursePriority.checked ? 'block' : 'none';
+
+            const startTimeGroup = document.getElementById('startTimeGroup');
+            startTimeGroup.style.display = waitCoursePriority.checked ? 'none' : 'block';
+        }
+
+        // SMTP 配置  显示或隐藏 SMTP 输入框
+        function toggleSmtpVisibility() {
+            const smtpEnabled = document.getElementById('smtpEnabled');
+            const smtpGroup = document.getElementById('smtpGroup');
+            smtpGroup.style.display = smtpEnabled.checked ? 'block' : 'none';
+        }
+
+        // 提交配置
+        function submitConfig() {
+            const courseRows = document.querySelectorAll('.course-row');
+            const courses = {};
+            courseRows.forEach(row => {
+                const courseInput = row.querySelector('.course-input').value;
+                const courseCheckbox = row.querySelector('.course-checkbox').checked ? "1" : "0";
+                if (courseInput) {
+                    courses[courseInput] = courseCheckbox;
+                }
+            });
+
+            const config = {
+                cas_login: {
+                    username: document.getElementById('casUsername').value,
+                    password: document.getElementById('casPassword').value,
+                    dingDingQrLoginEnabled: document.getElementById('dingDingQrLoginEnabled').checked ? "1" : "0",
+                    level: document.getElementById('casPriority').checked ? "0" : "1"
+                },
+                newjw_login: {
+                    username: document.getElementById('newjwUsername').value,
+                    password: document.getElementById('newjwPassword').value,
+                    level: document.getElementById('newjwPriority').checked ? "0" : "1"
+                },
+                cookies: {
+                    enabled: document.getElementById('cookiesEnabled').checked ? "1" : "0"
+                },
+                time: {
+                    XueNian: document.getElementById('xueNian').value,
+                    XueQi: document.getElementById('xueQi').value
+                },
+                course: courses,
+                wait_course: {
+                    enabled: document.getElementById('waitCoursePriority').checked ? "1" : "0",
+                    interval: parseInt(document.getElementById('interval').value)
+                },
+                smtp_email: {
+                    host: document.getElementById('smtpHost').value,
+                    username: document.getElementById('smtpUsername').value,
+                    password: document.getElementById('smtpPassword').value,
+                    to: document.getElementById('smtpTo').value,
+                    enabled: document.getElementById('smtpEnabled').checked ? "1" : "0"
+                },
+                start_time: document.getElementById('startTime').value
+            };
+
+            fetch('/saveConfig', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(config)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('配置文件保存成功！请重新启动程序以应用更改。');
+                } else {
+                    alert(response.statusText || '保存失败，请稍后再试！');
+                }
+            })
+            .catch(error => {
+                console.error('保存失败:', error);
+                alert('保存失败，请检查网络连接！');
+            });
+        }
+
+        // 页面加载时自动获取数据并填充
+        window.onload = function () {
+            fetch('/getConfig', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(config => {
+                // 填充 CAS 登录数据
+                document.getElementById('casUsername').value = config.cas_login.username || '';
+                document.getElementById('casPassword').value = config.cas_login.password || '';
+                document.getElementById('dingDingQrLoginEnabled').checked = config.cas_login.dingDingQrLoginEnabled === "1";
+                document.getElementById('casPriority').checked = config.cas_login.level === "0";
+
+                // 填充 NewJW 登录数据
+                document.getElementById('newjwUsername').value = config.newjw_login.username || '';
+                document.getElementById('newjwPassword').value = config.newjw_login.password || '';
+                document.getElementById('newjwPriority').checked = config.newjw_login.level === "0";
+
+                // 填充 Cookies 数据
+                document.getElementById('cookiesEnabled').checked = config.cookies.enabled === "1";
+
+                // 填充学年学期数据
+                document.getElementById('xueNian').value = config.time.XueNian || '';
+                document.getElementById('xueQi').value = config.time.XueQi || '';
+
+                // 填充课程数据
+                const courseContainer = document.getElementById('courseContainer');
+                courseContainer.innerHTML = ''; // 清空现有课程行
+                for (const [courseId, enabled] of Object.entries(config.course || {})) {
+                    const newRow = document.createElement('div');
+                    newRow.className = 'course-row';
+                    newRow.style = 'display: flex; align-items: center; margin-bottom: 10px;';
+                    newRow.innerHTML = `
+                        <input type="text" class="course-input" value="${courseId}" style="flex: 1; margin-right: 10px;">
+                        <label style="margin-right: 10px;">
+                            <input type="checkbox" class="course-checkbox" ${enabled === "1" ? 'checked' : ''}>
+                            打勾为选课,反之退课
+                        </label>
+                        <button type="button" onclick="deleteCourseRow(this)" style="padding: 5px 10px; font-size: 14px; width: auto;">删除</button>
+                    `;
+                    courseContainer.appendChild(newRow);
+                }
+
+                // 填充蹲课设置数据
+                document.getElementById('waitCoursePriority').checked = config.wait_course.enabled === "1";
+                document.getElementById('interval').value = config.wait_course.interval || '';
+
+                // 填充 SMTP 数据
+                document.getElementById('smtpHost').value = config.smtp_email.host || '';
+                document.getElementById('smtpUsername').value = config.smtp_email.username || '';
+                document.getElementById('smtpPassword').value = config.smtp_email.password || '';
+                document.getElementById('smtpTo').value = config.smtp_email.to || '';
+                document.getElementById('smtpEnabled').checked = config.smtp_email.enabled === "1";
+
+                // 填充开始时间数据
+                document.getElementById('startTime').value = config.start_time || '';
+
+                // 初始化显示状态
+                toggleCasLoginVisibility();
+                toggleIntervalVisibility();
+                toggleSmtpVisibility();
+            })
+            .catch(error => {
+                console.error('获取配置失败:', error);
+                alert('获取配置失败，请检查网络连接！');
+            });
+        };
+
+    </script>
+</body>
+</html>
