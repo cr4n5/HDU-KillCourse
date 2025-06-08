@@ -38,7 +38,7 @@ go build
 
 - click 可执行文件 5s后自动进入在线Web编辑配置模式
 
-![Web编辑配置](./Doc/img/WebEdit.png)
+![Web编辑配置](./Doc/img/webEdit.png)
 
 `手动编辑配置`
 
