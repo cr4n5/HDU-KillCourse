@@ -52,7 +52,7 @@ type WebConfig struct {
 	StartTime  string            `json:"start_time"`
 }
 
-func StartWebServer() error {
+func StartWebServer() {
 	// 初始端口号
 	port := 6688
 	// 检查端口是否被占用
@@ -132,5 +132,9 @@ func StartWebServer() error {
 	})
 
 	log.Info("访问该地址编辑配置: http://localhost:" + fmt.Sprintf("%d", port))
-	return http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	if err != nil {
+		log.Error("Web服务器启动失败: ", err)
+		return
+	}
 }

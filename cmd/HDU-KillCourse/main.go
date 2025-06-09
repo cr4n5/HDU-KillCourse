@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/cr4n5/HDU-KillCourse/config"
 	"github.com/cr4n5/HDU-KillCourse/log"
@@ -27,26 +26,10 @@ func main() {
 
 	vars.ShowPortal()
 
-	// 5秒倒计时，用户可以选择是否进入 Web 编辑配置模式
-	log.Info("按下 Enter 跳过进入 Web 编辑配置模式，5秒后自动进入...")
-	enterChan := make(chan bool)
-	go func() {
-		fmt.Scanln()
-		enterChan <- true
-	}()
-
-	select {
-	case <-enterChan:
-		log.Info("跳过 Web 编辑配置模式...")
-	case <-time.After(5 * time.Second):
-		log.Info("进入 Web 编辑配置模式...")
-		err := web.StartWebServer()
-		if err != nil {
-			log.Error("Web服务器启动失败: ", err)
-			return
-		}
-		return
-	}
+	// 启动web服务器编辑配置
+	go web.StartWebServer()
+	log.Info("按下Enter继续，或在web界面编辑配置文件...")
+	fmt.Scanln()
 
 	// 读取配置文件
 	log.Info("开始读取配置文件...")
@@ -56,6 +39,7 @@ func main() {
 		return
 	}
 	log.Info("读取配置文件成功")
+	log.Info(log.ErrorColor("Notice！: 如果配置文件有修改，请重启程序"))
 
 	// 登录
 	log.Info("开始登录...")

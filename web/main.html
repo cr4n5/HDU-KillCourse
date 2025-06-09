@@ -122,7 +122,7 @@
                     启用 Cookies
                 </label>
             </div>
-            <h3>(! 注意: Cookies使用账密登录自动更新,启用后若Cookies非空则将取消账密登录)</h3>
+            <h3>(! 注意: Cookies使用账密登录自动更新，启用后若Cookies非空则将取消账密登录)</h3>
             <div class="form-group" id="cookiesGroup" style="display: block;">
                 <div class="form-group">
                     <label for="JSESSIONID">JSESSIONID</label>
@@ -138,7 +138,7 @@
 
             <div class="form-group">
                 <h1 style="text-align: left;">学年学期设置</h1>
-                <h3>(! 注意: 为所选课程所在的学年学期,如2024-2025-1)</h3>
+                <h3>(! 注意: 为所选课程所在的学年学期，如2024-2025-1)</h3>
                 <label for="xueNian">学年</label>
                 <input type="text" id="xueNian" name="xueNian" value="2024">
             </div>
@@ -363,7 +363,7 @@
             })
             .then(response => {
                 if (response.ok) {
-                    alert('配置文件保存成功！请重新启动程序以应用更改。');
+                    alert('配置文件保存成功！');
                 } else {
                     response.text().then(msg => {
                         alert(msg || '保存失败！');

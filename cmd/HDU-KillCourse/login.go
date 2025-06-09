@@ -52,7 +52,7 @@ func NewjwLogin(c *client.Client, cfg *config.Config) error {
 	return nil
 }
 
-// CasPassWordLogin cas使用用户名密码登录  ！不可用 需手机验证码
+// CasPassWordLogin cas使用用户名密码登录
 func CasPassWordLogin(c *client.Client, cfg *config.Config) error {
 	log.Info("获取cas登录配置...")
 	// 获取cas登录配置
