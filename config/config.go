@@ -48,19 +48,6 @@ type Config struct {
 	CrossGrade              string `json:"CrossGrade,omitempty"`
 }
 
-// Course 课程信息结构体
-type Course struct {
-	Items []struct {
-		Jxbmc  string `json:"jxbmc"`
-		KchID  string `json:"kch_id"`
-		JxbID  string `json:"jxb_id"`
-		Jxbzc  string `json:"jxbzc"`
-		Kklxmc string `json:"kklxmc"`
-		Kcmc   string `json:"kcmc"` // 课程名称
-		Sksj   string `json:"sksj"` // 上课时间
-	} `json:"items"`
-}
-
 func InitCfg() (*Config, error) {
 	// 读取配置文件
 	bytes, err := os.ReadFile("config.json")
@@ -199,39 +186,6 @@ func (cfg *Config) Validate() error {
 
 	// 空行
 	log.Info("")
-
-	return nil
-}
-
-// ReadCourse 读取课程信息
-func ReadCourse() (*Course, error) {
-	// 读取课程信息
-	bytes, err := os.ReadFile("course.json")
-	if err != nil {
-		return nil, err
-	}
-
-	// 解析课程信息
-	var course Course
-	if err := json.Unmarshal(bytes, &course); err != nil {
-		return nil, err
-	}
-
-	return &course, nil
-}
-
-// SaveCourse 保存课程信息
-func SaveCourse(course *Course) error {
-	// 转换为json
-	bytes, err := json.Marshal(course)
-	if err != nil {
-		return err
-	}
-
-	// 保存课程信息
-	if err := os.WriteFile("course.json", bytes, 0666); err != nil {
-		return err
-	}
 
 	return nil
 }

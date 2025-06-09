@@ -1,18 +1,21 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
+	"strconv"
+	"time"
+
 	"github.com/cr4n5/HDU-KillCourse/client"
 	"github.com/cr4n5/HDU-KillCourse/config"
 	"github.com/cr4n5/HDU-KillCourse/log"
-	"strconv"
-	"time"
 )
 
-func GetCourse(c *client.Client, cfg *config.Config) (*config.Course, error) {
+func GetCourse(c *client.Client, cfg *config.Config) (*client.GetCourseResp, error) {
 	// 先从本地course.json读取课程信息
-	courses, err := config.ReadCourse()
+	courses, err := ReadCourse()
 	if err == nil {
 		return courses, nil
 	}
@@ -60,16 +63,45 @@ func GetCourse(c *client.Client, cfg *config.Config) (*config.Course, error) {
 	if err != nil {
 		return nil, err
 	}
-	// 转换为config.Course
-	courses = &config.Course{
-		Items: courseResp.Items,
-	}
 
 	// 保存课程信息到本地
-	err = config.SaveCourse(courses)
+	err = SaveCourse(courseResp)
 	if err != nil {
 		return nil, err
 	}
 
-	return courses, nil
+	return courseResp, nil
+}
+
+// ReadCourse 读取课程信息
+func ReadCourse() (*client.GetCourseResp, error) {
+	// 读取课程信息
+	bytes, err := os.ReadFile("course.json")
+	if err != nil {
+		return nil, err
+	}
+
+	// 解析课程信息
+	var course client.GetCourseResp
+	if err := json.Unmarshal(bytes, &course); err != nil {
+		return nil, err
+	}
+
+	return &course, nil
+}
+
+// SaveCourse 保存课程信息
+func SaveCourse(course *client.GetCourseResp) error {
+	// 转换为json
+	bytes, err := json.Marshal(course)
+	if err != nil {
+		return err
+	}
+
+	// 保存课程信息
+	if err := os.WriteFile("course.json", bytes, 0666); err != nil {
+		return err
+	}
+
+	return nil
 }

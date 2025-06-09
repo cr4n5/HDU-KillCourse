@@ -122,7 +122,7 @@ func CancelCourse(c *client.Client, JxbIds string, KchId string, XueNian string,
 }
 
 // HandleCourse 处理课程
-func HandleCourse(c *client.Client, cfg *config.Config, course *config.Course, CourseName string, SelectFlag interface{}) error {
+func HandleCourse(c *client.Client, cfg *config.Config, course *client.GetCourseResp, CourseName string, SelectFlag interface{}) error {
 	for _, v := range course.Items {
 		if v.Jxbmc == CourseName {
 			// 更改Kklxdm
@@ -183,7 +183,7 @@ func HandleCourse(c *client.Client, cfg *config.Config, course *config.Course, C
 }
 
 // KillCourse 选退课
-func KillCourse(ctx context.Context, c *client.Client, cfg *config.Config, course *config.Course) {
+func KillCourse(ctx context.Context, c *client.Client, cfg *config.Config, course *client.GetCourseResp) {
 	// 计算需要等待的时间
 	// 时区
 	loc, err := time.LoadLocation("Asia/Shanghai")

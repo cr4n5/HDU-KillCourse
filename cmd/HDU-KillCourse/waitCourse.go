@@ -12,7 +12,7 @@ import (
 )
 
 // StartWaitCourse 开始蹲课
-func StartWaitCourse(ctx context.Context, c *client.Client, cfg *config.Config, courses *config.Course, CourseName string, waitCourseChannel chan string) {
+func StartWaitCourse(ctx context.Context, c *client.Client, cfg *config.Config, courses *client.GetCourseResp, CourseName string, waitCourseChannel chan string) {
 	defer func() {
 		waitCourseChannel <- "完成"
 	}()
@@ -78,7 +78,7 @@ func SendEmail(cfg *config.Config, subject string, body string) {
 }
 
 // GetIsCourseOk 检验是否有余量
-func GetIsCourseOk(c *client.Client, cfg *config.Config, course *config.Course, CourseName string) (bool, error) {
+func GetIsCourseOk(c *client.Client, cfg *config.Config, course *client.GetCourseResp, CourseName string) (bool, error) {
 	for _, v := range course.Items {
 		if v.Jxbmc == CourseName {
 			// 更改Kklxdm
@@ -137,7 +137,7 @@ func GetIsCourseOk(c *client.Client, cfg *config.Config, course *config.Course, 
 }
 
 // WaitCourse 蹲课
-func WaitCourse(ctx context.Context, c *client.Client, cfg *config.Config, course *config.Course) {
+func WaitCourse(ctx context.Context, c *client.Client, cfg *config.Config, course *client.GetCourseResp) {
 	defer func() {
 		channel <- "完成"
 	}()
