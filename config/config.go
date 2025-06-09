@@ -11,41 +11,59 @@ import (
 
 // Config 配置文件结构体
 type Config struct {
-	CasLogin struct {
-		Username               string `json:"username"`
-		Password               string `json:"password"`
-		DingDingQrLoginEnabled string `json:"dingDingQrLoginEnabled"`
-		Level                  string `json:"level"`
-	} `json:"cas_login"`
-	NewjwLogin struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-		Level    string `json:"level"`
-	} `json:"newjw_login"`
-	Cookies struct {
-		JSESSIONID string `json:"JSESSIONID"`
-		Route      string `json:"route"`
-		Enabled    string `json:"enabled"`
-	} `json:"cookies"`
-	Time struct {
-		XueNian string `json:"XueNian"`
-		XueQi   string `json:"XueQi"`
-	} `json:"time"`
-	Course     *orderedmap.OrderedMap `json:"course"`
-	WaitCourse struct {
-		Interval int    `json:"interval"`
-		Enabled  string `json:"enabled"`
-	} `json:"wait_course"`
-	SmtpEmail struct {
-		Host     string `json:"host"`
-		Username string `json:"username"`
-		Password string `json:"password"`
-		To       string `json:"to"`
-		Enabled  string `json:"enabled"`
-	} `json:"smtp_email"`
+	CasLogin                `json:"cas_login"`
+	NewjwLogin              `json:"newjw_login"`
+	Cookies                 `json:"cookies"`
+	Time                    `json:"time"`
+	Course                  *orderedmap.OrderedMap `json:"course"`
+	WaitCourse              `json:"wait_course"`
+	SmtpEmail               `json:"smtp_email"`
 	StartTime               string `json:"start_time"`
 	ClientBodyConfigEnabled string `json:"ClientBodyConfigEnabled,omitempty"`
-	CrossGrade              string `json:"CrossGrade,omitempty"`
+	CrossGradeEnabled       string `json:"CrossGradeEnabled,omitempty"`
+}
+
+// CasLogin CAS 登录配置
+type CasLogin struct {
+	Username               string `json:"username"`
+	Password               string `json:"password"`
+	DingDingQrLoginEnabled string `json:"dingDingQrLoginEnabled"`
+	Level                  string `json:"level"`
+}
+
+// NewjwLogin 新教务登录配置
+type NewjwLogin struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Level    string `json:"level"`
+}
+
+// Cookies Cookie 配置
+type Cookies struct {
+	JSESSIONID string `json:"JSESSIONID"`
+	Route      string `json:"route"`
+	Enabled    string `json:"enabled"`
+}
+
+// Time 学年学期配置
+type Time struct {
+	XueNian string `json:"XueNian"`
+	XueQi   string `json:"XueQi"`
+}
+
+// WaitCourse 蹲课配置
+type WaitCourse struct {
+	Interval int    `json:"interval"`
+	Enabled  string `json:"enabled"`
+}
+
+// SmtpEmail SMTP 邮件配置
+type SmtpEmail struct {
+	Host     string `json:"host"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	To       string `json:"to"`
+	Enabled  string `json:"enabled"`
 }
 
 func InitCfg() (*Config, error) {

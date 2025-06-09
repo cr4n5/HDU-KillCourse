@@ -89,7 +89,7 @@
             <div class="form-group">
                 <label for="dingDingQrLoginEnabled">
                     <input type="checkbox" id="dingDingQrLoginEnabled" name="dingDingQrLoginEnabled" onclick="toggleCasLoginVisibility()">
-                    启用钉钉二维码登录（！注意：将取消账号密码登录）
+                    启用钉钉二维码登录(! 注意: 将取消CAS账号密码登录)
                 </label>
             </div>
 
@@ -118,16 +118,27 @@
             <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
                 <h1 style="margin: 0;">Cookies 设置</h1>
                 <label for="cookiesEnabled" style="margin: 0;">
-                    <input type="checkbox" id="cookiesEnabled" name="cookiesEnabled" checked>
+                    <input type="checkbox" id="cookiesEnabled" name="cookiesEnabled" checked onclick="toggleCookiesVisibility()">
                     启用 Cookies
                 </label>
+            </div>
+            <h3>(! 注意: Cookies使用账密登录自动更新,启用后若Cookies非空则将取消账密登录)</h3>
+            <div class="form-group" id="cookiesGroup" style="display: block;">
+                <div class="form-group">
+                    <label for="JSESSIONID">JSESSIONID</label>
+                    <input type="text" id="JSESSIONID" name="JSESSIONID" value="">
+                </div>
+                <div class="form-group">
+                    <label for="route">Route</label>
+                    <input type="text" id="route" name="route" value="">
+                </div>
             </div>
 
             <hr style="border: 1px solid #ccc; margin: 20px 0;">
 
             <div class="form-group">
                 <h1 style="text-align: left;">学年学期设置</h1>
-                <h3>! 注意：为所选课程所在的学年学期，如2024-2025-1</h3>
+                <h3>(! 注意: 为所选课程所在的学年学期,如2024-2025-1)</h3>
                 <label for="xueNian">学年</label>
                 <input type="text" id="xueNian" name="xueNian" value="2024">
             </div>
@@ -144,7 +155,7 @@
                     <button type="button" id="addCourse" onclick="addCourseRow()" style="padding: 5px 10px; font-size: 14px;">新增课程</button>
                 </label>
             </div>
-            <h3> ! 注意：课程按顺序执行</h3>
+            <h3>(! 注意：课程按顺序执行)</h3>
             <div class="form-group">
                 <div id="courseContainer">
                     <!-- 示例课程行 -->
@@ -163,7 +174,7 @@
 
             <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
                 <h1 style="margin: 0;">蹲课设置</h1>
-                <h3>! 注意：开启后将蹲课程列表中打勾的课程，不再进行抢课</h3>
+                <h3>(! 注意：开启后将蹲课程列表中打勾的课程，不再进行抢课)</h3>
                 <label for="waitCoursePriority" style="margin: 0;">
                     <input type="checkbox" id="waitCoursePriority" name="priority" onclick="toggleIntervalVisibility()">
                     启用蹲课
@@ -264,8 +275,15 @@
             const dingDingQrLoginEnabled = document.getElementById('dingDingQrLoginEnabled');
             const casLoginGroup = document.getElementById('casLoginGroup');
             casLoginGroup.style.display = dingDingQrLoginEnabled.checked ? 'none' : 'block';
-            const newJwGroup = document.getElementById('newJwGroup');
-            newJwGroup.style.display = dingDingQrLoginEnabled.checked ? 'none' : 'block';
+            // const newJwGroup = document.getElementById('newJwGroup');
+            // newJwGroup.style.display = dingDingQrLoginEnabled.checked ? 'none' : 'block';
+        }
+
+        // cookies 设置  显示或隐藏 Cookies 输入框
+        function toggleCookiesVisibility() {
+            const cookiesEnabled = document.getElementById('cookiesEnabled');
+            const cookiesGroup = document.getElementById('cookiesGroup');
+            cookiesGroup.style.display = cookiesEnabled.checked ? 'block' : 'none';
         }
 
         // 蹲课设置  显示或隐藏间隔时间输入框
@@ -288,12 +306,15 @@
         // 提交配置
         function submitConfig() {
             const courseRows = document.querySelectorAll('.course-row');
-            const courses = {};
+            const courses = new Map();
             courseRows.forEach(row => {
                 const courseInput = row.querySelector('.course-input').value;
                 const courseCheckbox = row.querySelector('.course-checkbox').checked ? "1" : "0";
                 if (courseInput) {
-                    courses[courseInput] = courseCheckbox;
+                    courses.set(courseInput, courseCheckbox);
+                } else {
+                    alert('请填写所有课程编号！');
+                    throw new Error('课程编号不能为空');
                 }
             });
 
@@ -310,13 +331,15 @@
                     level: document.getElementById('newjwPriority').checked ? "0" : "1"
                 },
                 cookies: {
+                    JSESSIONID: document.getElementById('JSESSIONID').value,
+                    route: document.getElementById('route').value,
                     enabled: document.getElementById('cookiesEnabled').checked ? "1" : "0"
                 },
                 time: {
                     XueNian: document.getElementById('xueNian').value,
                     XueQi: document.getElementById('xueQi').value
                 },
-                course: courses,
+                course: Array.from(courses),
                 wait_course: {
                     enabled: document.getElementById('waitCoursePriority').checked ? "1" : "0",
                     interval: parseInt(document.getElementById('interval').value)
@@ -342,12 +365,14 @@
                 if (response.ok) {
                     alert('配置文件保存成功！请重新启动程序以应用更改。');
                 } else {
-                    alert(response.statusText || '保存失败，请稍后再试！');
+                    response.text().then(msg => {
+                        alert(msg || '保存失败！');
+                    });
                 }
             })
             .catch(error => {
                 console.error('保存失败:', error);
-                alert('保存失败，请检查网络连接！');
+                alert('保存失败:', error.message || '网络错误，请稍后再试！');
             });
         }
 
@@ -359,7 +384,14 @@
                     'Content-Type': 'application/json'
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(msg => {
+                        throw new Error(msg || '获取配置失败！');
+                    });
+                }
+                return response.json();
+            })
             .then(config => {
                 // 填充 CAS 登录数据
                 document.getElementById('casUsername').value = config.cas_login.username || '';
@@ -373,6 +405,8 @@
                 document.getElementById('newjwPriority').checked = config.newjw_login.level === "0";
 
                 // 填充 Cookies 数据
+                document.getElementById('JSESSIONID').value = config.cookies.JSESSIONID || '';
+                document.getElementById('route').value = config.cookies.route || '';
                 document.getElementById('cookiesEnabled').checked = config.cookies.enabled === "1";
 
                 // 填充学年学期数据
@@ -382,7 +416,7 @@
                 // 填充课程数据
                 const courseContainer = document.getElementById('courseContainer');
                 courseContainer.innerHTML = ''; // 清空现有课程行
-                for (const [courseId, enabled] of Object.entries(config.course || {})) {
+                (config.course || []).forEach(([courseId, enabled]) => {
                     const newRow = document.createElement('div');
                     newRow.className = 'course-row';
                     newRow.style = 'display: flex; align-items: center; margin-bottom: 10px;';
@@ -395,7 +429,7 @@
                         <button type="button" onclick="deleteCourseRow(this)" style="padding: 5px 10px; font-size: 14px; width: auto;">删除</button>
                     `;
                     courseContainer.appendChild(newRow);
-                }
+                });
 
                 // 填充蹲课设置数据
                 document.getElementById('waitCoursePriority').checked = config.wait_course.enabled === "1";
@@ -413,12 +447,13 @@
 
                 // 初始化显示状态
                 toggleCasLoginVisibility();
+                toggleCookiesVisibility();
                 toggleIntervalVisibility();
                 toggleSmtpVisibility();
             })
             .catch(error => {
                 console.error('获取配置失败:', error);
-                alert('获取配置失败，请检查网络连接！');
+                alert('获取配置失败:', error || '网络错误，请稍后再试！');
             });
         };
 
