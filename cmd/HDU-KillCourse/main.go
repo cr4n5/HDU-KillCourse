@@ -58,7 +58,7 @@ func main() {
 		return
 	}
 	log.Info("获取课程信息成功...")
-	log.Info(log.ErrorColor("Notice！: 在下学期选课开始前，请删除course.json文件，获取最新课程信息"))
+	// log.Info(log.ErrorColor("Notice！: 在下学期选课开始前，请删除course.json文件，获取最新课程信息"))
 
 	cancelCtx, cancel := context.WithCancel(ctx)
 	// 捕获终止信号
