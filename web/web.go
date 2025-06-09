@@ -121,7 +121,13 @@ func StartWebServer() {
 		cfg.WaitCourse = webCfg.WaitCourse
 		cfg.SmtpEmail = webCfg.SmtpEmail
 		cfg.StartTime = webCfg.StartTime
-
+		// 验证配置
+		err = cfg.Validate()
+		if err != nil {
+			http.Error(w, "配置验证失败: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+		// 保存配置
 		err = config.SaveConfig(cfg)
 		if err != nil {
 			http.Error(w, "无法保存配置文件: "+err.Error(), http.StatusInternalServerError)

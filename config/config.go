@@ -84,6 +84,9 @@ func InitCfg() (*Config, error) {
 		return nil, err
 	}
 
+	// 打印配置文件
+	cfg.PrintConfig()
+
 	return &cfg, nil
 }
 
@@ -156,7 +159,21 @@ func (cfg *Config) Validate() error {
 	if cfg.Course == nil {
 		return errors.New("课程为空")
 	}
-	if cfg.WaitCourse.Interval == 0 || cfg.WaitCourse.Enabled == "" {
+	// 校验课程信息 (2024-2025-1) 是否与学年学期匹配
+	for _, k := range cfg.Course.Keys() {
+		v, _ := cfg.Course.Get(k)
+		if len(k) < 12 {
+			return errors.New("课程信息格式错误: " + k)
+		}
+		if k[1:5] != cfg.Time.XueNian || k[11:12] != cfg.Time.XueQi {
+			// k[1:5] 是学年，k[11:12] 是学期
+			return errors.New("课程信息学年学期与配置不匹配: " + k)
+		}
+		if v == "" {
+			return errors.New("课程信息值为空: " + k)
+		}
+	}
+	if cfg.WaitCourse.Interval == 0 && cfg.WaitCourse.Enabled == "1" {
 		return errors.New("WaitCourse为空")
 	}
 	if cfg.SmtpEmail.Enabled == "1" {
@@ -164,10 +181,17 @@ func (cfg *Config) Validate() error {
 			return errors.New("SmtpEmail为空")
 		}
 	}
-	if cfg.StartTime == "" {
-		return errors.New("StartTime为空")
+	if cfg.WaitCourse.Enabled == "1" {
+		if cfg.StartTime == "" {
+			return errors.New("StartTime为空")
+		}
 	}
 
+	return nil
+}
+
+// PrintConfig 打印配置文件
+func (cfg *Config) PrintConfig() {
 	// 打印配置文件
 	// 空行
 	log.Info("")
@@ -204,8 +228,6 @@ func (cfg *Config) Validate() error {
 
 	// 空行
 	log.Info("")
-
-	return nil
 }
 
 // SaveConfig 保存配置文件
