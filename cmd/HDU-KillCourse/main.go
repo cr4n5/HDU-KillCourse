@@ -42,7 +42,7 @@ func main() {
 		return
 	}
 	log.Info("读取配置文件成功")
-	log.Info(log.ErrorColor("Notice！: 如果配置文件有修改，请重启程序"))
+	log.Info(log.ErrorColor("Notice！: 读取配置文件后，如果配置文件有修改，请重启程序"))
 
 	// 登录
 	log.Info("开始登录...")
