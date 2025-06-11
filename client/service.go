@@ -405,3 +405,21 @@ func (c *Client) SearchCourse(req *SearchCourseReq) (*SearchCourseResp, error) {
 
 	return &searchCourseResp, nil
 }
+
+// GetReleases 获取仓库最新版本
+func (c *Client) GetReleases() (*GetReleasesResp, error) {
+	url := "https://api.github.com/repos/cr4n5/HDU-KillCourse/releases/latest"
+	// 获取仓库最新版本
+	result, _, err := c.Get(url, nil)
+	if err != nil {
+		return nil, err
+	}
+	// 解析仓库最新版本
+	var releasesResp GetReleasesResp
+	err = json.Unmarshal(result, &releasesResp)
+	if err != nil {
+		return nil, err
+	}
+
+	return &releasesResp, nil
+}

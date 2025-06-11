@@ -9,7 +9,7 @@ var portal = `
  |  _  | | |_| | | |_| | |_____| | . \  | | | | | | | |___  | (_) | | |_| | | |    \__ \ |  __/
  |_| |_| |____/   \___/          |_|\_\ |_| |_| |_|  \____|  \___/   \__,_| |_|    |___/  \___|
 
-HDU-KillCourse[https://github.com/cr4n5/HDU-KillCourse]
+HDU-KillCourse[https://github.com/cr4n5/HDU-KillCourse]               version: ` + Version + `
 `
 
 func ShowPortal() {

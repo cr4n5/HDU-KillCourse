@@ -10,3 +10,6 @@ var (
 		"https://newjw.hdu.edu.cn/jwglxt/xsxk/zzxkyzb_cxZzxkYzbIndex.html?gnmkdm=N253512&layout=default": true, // 选课配置
 	}
 )
+
+// Version 当前版本
+const Version = "v1.4.2"

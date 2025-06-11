@@ -26,6 +26,9 @@ func main() {
 
 	vars.ShowPortal()
 
+	// 检查版本更新
+	go VersionUpdate()
+
 	// 启动web服务器编辑配置
 	go web.StartWebServer()
 	log.Info("按下Enter继续，或在web界面编辑配置文件...")

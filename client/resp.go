@@ -44,3 +44,9 @@ type QrLoginStatusResp struct {
 	Message string `json:"message"`
 	Data    string `json:"data"`
 }
+
+// GetReleasesResp 获取最新版本信息的响应结构体
+type GetReleasesResp struct {
+	TagName string `json:"tag_name"`
+	Body    string `json:"body"`
+}
