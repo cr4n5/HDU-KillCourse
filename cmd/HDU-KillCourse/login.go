@@ -196,8 +196,18 @@ func Login(cfg *config.Config) (*client.Client, error) {
 		if err != nil {
 			return nil, err
 		}
-		log.Info(log.ErrorColor("Notice！: 若登录过期，将cookies.enabled置为0，重新登录"))
-		return c, nil
+
+		// 检查cookies是否有效
+		log.Info("正在检查cookies是否有效...")
+		err = c.GetClientBodyConfig()
+		if err != nil && err.Error() == "可能登录过期" {
+			log.Error("cookies已过期, 重新登录...")
+			// 重置client
+			c = client.NewClient(cfg)
+		} else {
+			log.Info("cookies应该maybe有效")
+			return c, nil
+		}
 	}
 
 	// 根据Level优先级登录

@@ -213,10 +213,13 @@ func KillCourse(ctx context.Context, c *client.Client, cfg *config.Config, cours
 				// 获取选课配置
 				err = ReadClientBodyConfig(c)
 				if err != nil {
-					err = c.GetClientBodyConfig()
-					if err != nil {
-						log.Error("获取选课配置失败: ", err)
-						continue
+					// 检查cookies可能已经获取过配置
+					if c.ClientBodyConfig == nil {
+						err = c.GetClientBodyConfig()
+						if err != nil {
+							log.Error("获取选课配置失败: ", err)
+							continue
+						}
 					}
 				}
 				// 保存选课配置

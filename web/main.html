@@ -122,7 +122,7 @@
                     启用 Cookies
                 </label>
             </div>
-            <h3>(! 注意: Cookies使用账密登录自动更新，启用后若Cookies非空则将取消账密登录)</h3>
+            <h3>(! 注意: Cookies自动更新 )</h3>
             <div class="form-group" id="cookiesGroup" style="display: block;">
                 <div class="form-group">
                     <label for="JSESSIONID">JSESSIONID</label>
@@ -187,38 +187,41 @@
 
             <hr style="border: 1px solid #ccc; margin: 20px 0;">
 
-            <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
-                <h1 style="margin: 0;">SMTP 配置</h1>
-                <label for="smtpEnabled" style="margin: 0;">
-                    <input type="checkbox" id="smtpEnabled" name="smtpEnabled" onclick="toggleSmtpVisibility()">
-                    启用 SMTP
-                </label>
-            </div>
-            <div class="form-group" id="smtpGroup" style="display: none;">
-                <div class="form-group">
-                    <label for="smtpHost">SMTP 服务器地址</label>
-                    <input type="text" id="smtpHost" name="smtpHost" value="smtp.qq.com">
+            <div class="form-group" id ="allsmtpGroup" style="display: none;">
+                <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
+                    <h1 style="margin: 0;">SMTP 邮箱提醒配置</h1>
+                    <h3>(! 注意：目前仅在蹲课模式下有效)</h3>
+                    <label for="smtpEnabled" style="margin: 0;">
+                        <input type="checkbox" id="smtpEnabled" name="smtpEnabled" onclick="toggleSmtpVisibility()">
+                        启用 SMTP
+                    </label>
                 </div>
-                <div class="form-group">
-                    <label for="smtpUsername">SMTP 用户名</label>
-                    <input type="text" id="smtpUsername" name="smtpUsername" value="...@qq.com">
+                <div class="form-group" id="smtpGroup" style="display: none;">
+                    <div class="form-group">
+                        <label for="smtpHost">SMTP 服务器地址</label>
+                        <input type="text" id="smtpHost" name="smtpHost" value="smtp.qq.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="smtpUsername">SMTP 用户名</label>
+                        <input type="text" id="smtpUsername" name="smtpUsername" value="...@qq.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="smtpPassword">SMTP 密码</label>
+                        <input type="text" id="smtpPassword" name="smtpPassword" value="xxxxxxxx">
+                    </div>
+                    <div class="form-group">
+                        <label for="smtpTo">发送目标邮箱</label>
+                        <input type="text" id="smtpTo" name="smtpTo" value="...@qq.com">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="smtpPassword">SMTP 密码</label>
-                    <input type="text" id="smtpPassword" name="smtpPassword" value="xxxxxxxx">
-                </div>
-                <div class="form-group">
-                    <label for="smtpTo">发送目标邮箱</label>
-                    <input type="text" id="smtpTo" name="smtpTo" value="...@qq.com">
-                </div>
-            </div>
 
-            <hr style="border: 1px solid #ccc; margin: 20px 0;">
+                <hr style="border: 1px solid #ccc; margin: 20px 0;">
+            </div>
 
             <div class="form-group" id="startTimeGroup" style="display: block;">
                 <div class="form-group">
                     <h1 style="text-align: left;">开始时间设置</h1>
-                    <label for="startTime">开始时间 (格式: YYYY-MM-DD HH:mm:ss)</label>
+                    <label for="startTime">抢课开始时间 (格式: YYYY-MM-DD HH:mm:ss)</label>
                     <input type="text" id="startTime" name="startTime" value="2024-07-25 12:00:00">
                 </div>
 
@@ -292,8 +295,13 @@
             const intervalGroup = document.getElementById('intervalGroup');
             intervalGroup.style.display = waitCoursePriority.checked ? 'block' : 'none';
 
+            // 显示或隐藏开始时间输入框
             const startTimeGroup = document.getElementById('startTimeGroup');
             startTimeGroup.style.display = waitCoursePriority.checked ? 'none' : 'block';
+
+            // 显示或隐藏 SMTP 配置
+            const allsmtpGroup = document.getElementById('allsmtpGroup');
+            allsmtpGroup.style.display = waitCoursePriority.checked ? 'block' : 'none';
         }
 
         // SMTP 配置  显示或隐藏 SMTP 输入框

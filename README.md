@@ -63,7 +63,7 @@ go build
     "cookies": { //若 JSESSIONID为空 或 route为空 或 enabled为0，则将不会使用cookies登录
         "JSESSIONID": "",// 每次登录cookie参数都会自动更新
         "route": "",
-        "enabled": "1"//如若登录过期，将enabled改为0，将不会使用cookies登录
+        "enabled": "1"//如若登录过期，程序重启大法
     },
     "time": {
         "XueNian": "2024",//所选课程所在的学年学期，如2024-2025-1
