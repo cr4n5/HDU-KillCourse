@@ -21,23 +21,25 @@ func GetDoJxbId(c *client.Client, KchId string, JxbId string, Kklxdm string, Njd
 
 	// 设置请求参数
 	req := &client.GetDoJxbIdReq{
-		BklxID: "0",
-		NjdmID: NjdmId,
-		Xkxnm:  XueNian,
-		Xkxqm:  Xqm,
-		Kklxdm: Kklxdm,
-		KchID:  KchId,
-		XkkzID: c.ClientBodyConfig.XkkzId[Kklxdm],
-		Xsbj:   c.ClientBodyConfig.Xsbj,
-		Ccdm:   c.ClientBodyConfig.Ccdm,
-		Xz:     c.ClientBodyConfig.Xz,
-		Mzm:    c.ClientBodyConfig.Mzm,
-		Xslbdm: c.ClientBodyConfig.Xslbdm,
-		Xbm:    c.ClientBodyConfig.Xbm,
-		BhID:   c.ClientBodyConfig.BhId,
-		ZyfxID: c.ClientBodyConfig.ZyfxId,
-		JgID:   c.ClientBodyConfig.JgId,
-		XqhID:  c.ClientBodyConfig.XqhId,
+		BklxID:   "0",
+		NjdmID:   NjdmId,
+		Xkxnm:    XueNian,
+		Xkxqm:    Xqm,
+		Kklxdm:   Kklxdm,
+		KchID:    KchId,
+		XkkzID:   c.ClientBodyConfig.XkkzId[Kklxdm],
+		Xsbj:     c.ClientBodyConfig.Xsbj,
+		Ccdm:     c.ClientBodyConfig.Ccdm,
+		Xz:       c.ClientBodyConfig.Xz,
+		Mzm:      c.ClientBodyConfig.Mzm,
+		Xslbdm:   c.ClientBodyConfig.Xslbdm,
+		Xbm:      c.ClientBodyConfig.Xbm,
+		BhID:     c.ClientBodyConfig.BhId,
+		ZyfxID:   c.ClientBodyConfig.ZyfxId,
+		JgID:     c.ClientBodyConfig.JgId,
+		XqhID:    c.ClientBodyConfig.XqhId,
+		NjdmIDXs: c.NjdmIDXs,
+		ZyhIDXs:  c.ZyhIDXs,
 	}
 
 	// 发送请求
@@ -78,6 +80,9 @@ func SelectCourse(c *client.Client, JxbIds string, KchId string, Kklxdm string, 
 			req.ZyhID = c.ClientBodyConfig.BhId[2:6]
 		}
 	}
+
+	req.NjdmIDXs = c.NjdmIDXs
+	req.ZyhIDXs = c.ZyhIDXs
 
 	// 发送请求
 	result, err := c.SelectCourse(req)
@@ -198,6 +203,8 @@ func KillCourse(ctx context.Context, c *client.Client, cfg *config.Config, cours
 	}
 	log.Info("选课开始时间: ", t)
 	waitTime := t.Unix() - time.Now().Unix()
+
+	c.GetBhId()
 
 	select {
 	case <-ctx.Done():

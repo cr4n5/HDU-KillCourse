@@ -31,6 +31,8 @@ type ClientBodyConfig struct {
 type Client struct {
 	client           *http.Client
 	ClientBodyConfig *ClientBodyConfig
+	NjdmIDXs         string
+	ZyhIDXs          string
 }
 
 // NewClient 创建一个新的客户端

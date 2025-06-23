@@ -289,6 +289,16 @@ func (c *Client) GetClientBodyConfig() error {
 		} else {
 			return errors.New("xqh_id获取失败")
 		}
+		// if node := htmlquery.FindOne(doc, `//input[@name="njdm_id_xs"]/@value`); node != nil {
+		// 	c.NjdmIDXs = htmlquery.InnerText(node)
+		// } else {
+		// 	return errors.New("njdm_id_xs获取失败")
+		// }
+		// if node := htmlquery.FindOne(doc, `//input[@name="zyh_id_xs"]/@value`); node != nil {
+		// 	c.ZyhIDXs = htmlquery.InnerText(node)
+		// } else {
+		// 	return errors.New("zyh_id_xs获取失败")
+		// }
 
 		// 获取选课控制ID
 		if node := htmlquery.Find(doc, `//a[@role="tab"]/@onclick`); node != nil {
@@ -427,4 +437,25 @@ func (c *Client) GetReleases() (*GetReleasesResp, error) {
 	}
 
 	return &releasesResp, nil
+}
+
+func (c *Client) GetBhId() error {
+	url := "https://newjw.hdu.edu.cn/jwglxt/xtgl/index_cxYhxxIndex.html"
+	result, _, err := c.Get(url, nil)
+	if err != nil {
+		return err
+	}
+	if strings.Contains(string(result), "统一身份认证") {
+		return errors.New("可能登录过期")
+	}
+	// 解析bh_id
+	pattern := regexp.MustCompile(`\d{8}`) // 匹配 8 位数字
+	matches := pattern.FindAllString(string(result), -1)
+	if matches == nil {
+		return errors.New("未找到班级信息")
+	}
+	bhid := matches[1]
+	c.NjdmIDXs = "20" + bhid[0:2]
+	c.ZyhIDXs = bhid[2:6]
+	return nil
 }

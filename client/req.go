@@ -188,65 +188,73 @@ func (req *GetCourseReq) ToFormData() url.Values {
 
 // GetDoJxbIdReq 获取do_jxb_id请求
 type GetDoJxbIdReq struct {
-	BklxID string
-	NjdmID string
-	Xkxnm  string
-	Xkxqm  string
-	Kklxdm string
-	KchID  string
-	XkkzID string
-	Xsbj   string
-	Ccdm   string
-	Xz     string
-	Mzm    string
-	Xslbdm string
-	Xbm    string
-	BhID   string
-	ZyfxID string
-	JgID   string
-	XqhID  string
+	BklxID   string
+	NjdmID   string
+	Xkxnm    string
+	Xkxqm    string
+	Kklxdm   string
+	KchID    string
+	XkkzID   string
+	Xsbj     string
+	Ccdm     string
+	Xz       string
+	Mzm      string
+	Xslbdm   string
+	Xbm      string
+	BhID     string
+	ZyfxID   string
+	JgID     string
+	XqhID    string
+	NjdmIDXs string
+	ZyhIDXs  string
 }
 
 // ToFormData 转换为表单数据
 func (req *GetDoJxbIdReq) ToFormData() url.Values {
 	return url.Values{
-		"bklx_id": {req.BklxID},
-		"njdm_id": {req.NjdmID},
-		"xkxnm":   {req.Xkxnm},
-		"xkxqm":   {req.Xkxqm},
-		"kklxdm":  {req.Kklxdm},
-		"kch_id":  {req.KchID},
-		"xkkz_id": {req.XkkzID},
-		"xsbj":    {req.Xsbj},
-		"ccdm":    {req.Ccdm},
-		"xz":      {req.Xz},
-		"mzm":     {req.Mzm},
-		"xslbdm":  {req.Xslbdm},
-		"xbm":     {req.Xbm},
-		"bh_id":   {req.BhID},
-		"zyfx_id": {req.ZyfxID},
-		"jg_id":   {req.JgID},
-		"xqh_id":  {req.XqhID},
+		"bklx_id":    {req.BklxID},
+		"njdm_id":    {req.NjdmID},
+		"xkxnm":      {req.Xkxnm},
+		"xkxqm":      {req.Xkxqm},
+		"kklxdm":     {req.Kklxdm},
+		"kch_id":     {req.KchID},
+		"xkkz_id":    {req.XkkzID},
+		"xsbj":       {req.Xsbj},
+		"ccdm":       {req.Ccdm},
+		"xz":         {req.Xz},
+		"mzm":        {req.Mzm},
+		"xslbdm":     {req.Xslbdm},
+		"xbm":        {req.Xbm},
+		"bh_id":      {req.BhID},
+		"zyfx_id":    {req.ZyfxID},
+		"jg_id":      {req.JgID},
+		"xqh_id":     {req.XqhID},
+		"njdm_id_xs": {req.NjdmIDXs},
+		"zyh_id_xs":  {req.ZyhIDXs},
 	}
 }
 
 // SelectCourseReq 选课请求
 type SelectCourseReq struct {
-	JxbIDs string
-	KchID  string
-	Qz     string
-	NjdmID string
-	ZyhID  string
+	JxbIDs   string
+	KchID    string
+	Qz       string
+	NjdmID   string
+	ZyhID    string
+	NjdmIDXs string
+	ZyhIDXs  string
 }
 
 // ToFormData 转换为表单数据
 func (req *SelectCourseReq) ToFormData() url.Values {
 	return url.Values{
-		"jxb_ids": {req.JxbIDs},
-		"kch_id":  {req.KchID},
-		"qz":      {req.Qz},
-		"njdm_id": {req.NjdmID},
-		"zyh_id":  {req.ZyhID},
+		"jxb_ids":    {req.JxbIDs},
+		"kch_id":     {req.KchID},
+		"qz":         {req.Qz},
+		"njdm_id":    {req.NjdmID},
+		"zyh_id":     {req.ZyhID},
+		"njdm_id_xs": {req.NjdmIDXs},
+		"zyh_id_xs":  {req.ZyhIDXs},
 	}
 }
 
