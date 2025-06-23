@@ -186,29 +186,34 @@ func (c *Client) NewjwLoginPost(req *LoginReq) (string, error) {
 }
 
 // GetCourse 获取课程
-func (c *Client) GetCourse(req *GetCourseReq) (*GetCourseResp, error) {
+func (c *Client) GetCourse(req *GetCourseReq) (*GetCourseResp, *GetCourseToExcelResp, error) {
 	course_url := "https://newjw.hdu.edu.cn/jwglxt/rwlscx/rwlscx_cxRwlsIndex.html?doType=query&gnmkdm=N1548"
 	// 获取课程
 	formData := req.ToFormData()
 	result, _, err := c.Post(course_url, formData.Encode(), nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if strings.Contains(string(result), "统一身份认证") {
-		return nil, errors.New("可能登录过期")
+		return nil, nil, errors.New("可能登录过期")
 	}
 	// 检验是否可以获取课程
 	if strings.Contains(string(result), "无功能权限") {
-		return nil, errors.New("任务落实查询并未开放")
+		return nil, nil, errors.New("任务落实查询并未开放")
 	}
 	// 解析课程
 	var courseResp GetCourseResp
 	err = json.Unmarshal(result, &courseResp)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
+	}
+	var courseToExcelResp GetCourseToExcelResp
+	err = json.Unmarshal(result, &courseToExcelResp)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	return &courseResp, nil
+	return &courseResp, &courseToExcelResp, nil
 }
 
 // GetClientBodyConfig 获取选课配置

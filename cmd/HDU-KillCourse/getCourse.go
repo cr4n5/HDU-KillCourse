@@ -11,6 +11,7 @@ import (
 	"github.com/cr4n5/HDU-KillCourse/client"
 	"github.com/cr4n5/HDU-KillCourse/config"
 	"github.com/cr4n5/HDU-KillCourse/log"
+	"github.com/xuri/excelize/v2"
 )
 
 func GetCourse(c *client.Client, cfg *config.Config) (*client.GetCourseResp, error) {
@@ -59,9 +60,17 @@ func GetCourse(c *client.Client, cfg *config.Config) (*client.GetCourseResp, err
 	}
 
 	// 获取课程信息
-	courseResp, err := c.GetCourse(req)
+	courseResp, courseToExcelResp, err := c.GetCourse(req)
 	if err != nil {
 		return nil, err
+	}
+
+	// 将课程信息保存为 Excel
+	err = CourseRenameToExcel(courseToExcelResp, xnmc, xqmc)
+	if err != nil {
+		log.Error("保存课程信息到Excel失败: ", err)
+	} else {
+		log.Info("任务落实情况课程已导出到Excel文件中...")
 	}
 
 	// 保存课程信息到本地
@@ -71,6 +80,58 @@ func GetCourse(c *client.Client, cfg *config.Config) (*client.GetCourseResp, err
 	}
 
 	return courseResp, nil
+}
+
+// CourseRenameToExcel 将课程信息转换为Excel保存
+func CourseRenameToExcel(course *client.GetCourseToExcelResp, xnmc string, xqmc string) error {
+	// 创建 Excel 文件
+	f := excelize.NewFile()
+
+	// 创建工作表
+	sheetName := "课程信息"
+	index, _ := f.NewSheet(sheetName)
+
+	// 设置表头
+	headers := []string{
+		"教学班名称", "课程号", "课程名称", "是否开课", "是否排课", "选课标记",
+		"上课时间", "上课地点", "场地名称", "场地具体名称", "教职工信息",
+		"教师出生日期", "教师性别", "开课部门", "学分", "授课学院",
+		"教学班容量", "教学班人数", "选课人数", "面向对象", "授课班级",
+		"授课详情", "开课类型", "课程归属", "讲课学时", "考核方式", "学科备注",
+	}
+	for col, header := range headers {
+		colName, _ := excelize.ColumnNumberToName(col + 1) // 列索引从 1 开始
+		cell := colName + "1"
+		f.SetCellValue(sheetName, cell, header)
+	}
+
+	// 填充数据
+	for row, item := range course.Items {
+		values := []string{
+			item.Jxbmc, item.KchID, item.Kcmc, item.Kkztmc, item.Bpkbj, item.Xkbjmc,
+			item.Sksj, item.Jxdd, item.Cdlbmc, item.Cdejlbmc, item.Jzgxx,
+			item.Jscsrq, item.Jsxb, item.Kkbm, item.Xf, item.Zczymc,
+			strconv.Itoa(item.Jxbrl), strconv.Itoa(item.Jxbrs), strconv.Itoa(item.Xkrs), item.Mxdx, item.Jxbzc,
+			item.Skdxssxy, item.Kklxmc, item.Kcgsmc, item.Kczhxs, item.Khfsmc, item.Xkbz,
+		}
+		for col, value := range values {
+			colName, _ := excelize.ColumnNumberToName(col + 1)
+			cell := colName + strconv.Itoa(row+2)
+			f.SetCellValue(sheetName, cell, value)
+		}
+	}
+
+	// 设置工作表为活动表
+	f.SetActiveSheet(index)
+
+	fileName := fmt.Sprintf("%s_%s_任务落实情况课程导出.xlsx", xnmc, xqmc)
+
+	// 保存 Excel 文件
+	if err := f.SaveAs(fileName); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // VarifyCourse 验证课程信息
