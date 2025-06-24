@@ -15,6 +15,12 @@ import (
 )
 
 func GetCourse(c *client.Client, cfg *config.Config) (*client.GetCourseResp, error) {
+	// 获取info
+	err := c.GetStuInfo()
+	if err != nil {
+		return nil, fmt.Errorf("获取用户信息失败: %w", err)
+	}
+
 	// 先从本地course.json读取课程信息
 	courses, err := ReadCourse(cfg)
 	if err == nil {

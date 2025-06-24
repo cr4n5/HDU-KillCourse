@@ -204,8 +204,6 @@ func KillCourse(ctx context.Context, c *client.Client, cfg *config.Config, cours
 	log.Info("选课开始时间: ", t)
 	waitTime := t.Unix() - time.Now().Unix()
 
-	c.GetBhId()
-
 	select {
 	case <-ctx.Done():
 		return

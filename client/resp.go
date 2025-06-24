@@ -82,3 +82,10 @@ type GetReleasesResp struct {
 	TagName string `json:"tag_name"`
 	Body    string `json:"body"`
 }
+
+type GetStuInfoResp struct {
+	Xsxx struct {
+		NJDMID string `json:"NJDM_ID"`
+		ZYHID  string `json:"ZYH_ID"`
+	} `json:"xsxx"`
+}

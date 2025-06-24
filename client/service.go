@@ -439,8 +439,9 @@ func (c *Client) GetReleases() (*GetReleasesResp, error) {
 	return &releasesResp, nil
 }
 
-func (c *Client) GetBhId() error {
-	url := "https://newjw.hdu.edu.cn/jwglxt/xtgl/index_cxYhxxIndex.html"
+func (c *Client) GetStuInfo() error {
+	// 课表
+	url := "https://newjw.hdu.edu.cn/jwglxt/kbcx/xskbcx_cxXsgrkb.html?gnmkdm=N2151&xnm=2022&xqm=3"
 	result, _, err := c.Get(url, nil)
 	if err != nil {
 		return err
@@ -448,14 +449,13 @@ func (c *Client) GetBhId() error {
 	if strings.Contains(string(result), "统一身份认证") {
 		return errors.New("可能登录过期")
 	}
-	// 解析bh_id
-	pattern := regexp.MustCompile(`\d{8}`) // 匹配 8 位数字
-	matches := pattern.FindAllString(string(result), -1)
-	if matches == nil {
-		return errors.New("未找到班级信息")
+	// 解析info
+	var stuInfoResp GetStuInfoResp
+	err = json.Unmarshal(result, &stuInfoResp)
+	if err != nil {
+		return err
 	}
-	bhid := matches[1]
-	c.NjdmIDXs = "20" + bhid[0:2]
-	c.ZyhIDXs = bhid[2:6]
+	c.NjdmIDXs = stuInfoResp.Xsxx.NJDMID
+	c.ZyhIDXs = stuInfoResp.Xsxx.ZYHID
 	return nil
 }
