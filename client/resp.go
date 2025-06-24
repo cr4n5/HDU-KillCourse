@@ -89,3 +89,7 @@ type GetStuInfoResp struct {
 		ZYHID  string `json:"ZYH_ID"`
 	} `json:"xsxx"`
 }
+
+type GetZyhIdByBhResp []struct {
+	ZyhID string `json:"zyh_id"`
+}

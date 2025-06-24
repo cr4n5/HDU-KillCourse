@@ -459,3 +459,23 @@ func (c *Client) GetStuInfo() error {
 	c.ZyhIDXs = stuInfoResp.Xsxx.ZYHID
 	return nil
 }
+
+func (c *Client) GetZyhIdByBh(id string) (string, error) {
+	url := fmt.Sprintf("https://newjw.hdu.edu.cn/jwglxt/xtgl/comm_cxBjdmList.html?&bh=%s", id)
+	result, _, err := c.Get(url, nil)
+	if err != nil {
+		return "", err
+	}
+	if strings.Contains(string(result), "统一身份认证") {
+		return "", errors.New("可能登录过期")
+	}
+	var resp GetZyhIdByBhResp
+	err = json.Unmarshal(result, &resp)
+	if err != nil {
+		return "", err
+	}
+	if len(resp) == 0 {
+		return "", errors.New("未查询到该班级的专业号")
+	}
+	return resp[0].ZyhID, nil
+}

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/cr4n5/HDU-KillCourse/client"
@@ -71,13 +72,16 @@ func SelectCourse(c *client.Client, JxbIds string, KchId string, Kklxdm string, 
 	// 若为主修课程
 	if Kklxdm == "01" {
 		if cfg.CrossGradeEnabled == "1" {
-			// req.NjdmID = "20" + Jxbzc[0:2]
-			// req.ZyhID = Jxbzc[2:6]
-			req.NjdmID = "20" + Jxbzc[len(Jxbzc)-8:len(Jxbzc)-6]
-			req.ZyhID = Jxbzc[len(Jxbzc)-6 : len(Jxbzc)-2]
+			req.NjdmID = "20" + Jxbzc[0:2]
+			bh := strings.Split(Jxbzc, ";")[0]
+			ZyhID, err := c.GetZyhIdByBh(bh)
+			if err != nil {
+				return err
+			}
+			req.ZyhID = ZyhID
 		} else {
-			req.NjdmID = "20" + c.ClientBodyConfig.BhId[0:2]
-			req.ZyhID = c.ClientBodyConfig.BhId[2:6]
+			req.NjdmID = c.NjdmIDXs
+			req.ZyhID = c.ZyhIDXs
 		}
 	}
 
