@@ -285,6 +285,8 @@ type SearchCourseReq struct {
 	Kspage     string
 	Yllist     string // 是否有余量
 	Filterlist string // 搜索内容
+	NjdmIDXs   string
+	ZyhIDXs    string
 }
 
 // ToFormData 转换为表单数据
@@ -297,5 +299,7 @@ func (req *SearchCourseReq) ToFormData() url.Values {
 		"kspage":         {req.Kspage},
 		"yl_list[0]":     {req.Yllist},
 		"filter_list[0]": {req.Filterlist},
+		"njdm_id_xs":     {req.NjdmIDXs},
+		"zyh_id_xs":      {req.ZyhIDXs},
 	}
 }

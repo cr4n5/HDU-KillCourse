@@ -114,6 +114,8 @@ func GetIsCourseOk(c *client.Client, cfg *config.Config, course *client.GetCours
 				Jspage:     "10",
 				Yllist:     "1",
 				Filterlist: CourseName,
+				NjdmIDXs:   c.NjdmIDXs,
+				ZyhIDXs:    c.ZyhIDXs,
 			}
 
 			// 发送请求
