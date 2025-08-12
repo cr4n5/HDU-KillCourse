@@ -9,8 +9,11 @@ import (
 
 	"github.com/cr4n5/HDU-KillCourse/config"
 	"github.com/cr4n5/HDU-KillCourse/log"
+	"github.com/cr4n5/HDU-KillCourse/pkg/course"
+	"github.com/cr4n5/HDU-KillCourse/pkg/login"
+	"github.com/cr4n5/HDU-KillCourse/pkg/version"
+	"github.com/cr4n5/HDU-KillCourse/pkg/web"
 	"github.com/cr4n5/HDU-KillCourse/vars"
-	"github.com/cr4n5/HDU-KillCourse/web"
 )
 
 // 程序结束信号
@@ -27,7 +30,7 @@ func main() {
 	vars.ShowPortal()
 
 	// 检查版本更新
-	go VersionUpdate()
+	go version.VersionUpdate()
 
 	// 启动web服务器编辑配置
 	go web.StartWebServer()
@@ -46,7 +49,7 @@ func main() {
 
 	// 登录
 	log.Info("开始登录...")
-	c, err := Login(cfg)
+	c, err := login.Login(cfg)
 	if err != nil {
 		log.Error("登录失败...")
 		return
@@ -55,7 +58,7 @@ func main() {
 
 	// 获取课程信息
 	log.Info("开始获取课程信息...")
-	courses, err := GetCourse(c, cfg)
+	courses, err := course.GetCourse(c, cfg)
 	if err != nil {
 		log.Error("获取课程信息失败: ", err)
 		return
@@ -69,9 +72,9 @@ func main() {
 
 	// 选退课
 	if cfg.WaitCourse.Enabled == "1" {
-		go WaitCourse(cancelCtx, c, cfg, courses)
+		go course.WaitCourse(cancelCtx, channel, c, cfg, courses)
 	} else {
-		go KillCourse(cancelCtx, c, cfg, courses)
+		go course.KillCourse(cancelCtx, channel, c, cfg, courses)
 	}
 
 	select {

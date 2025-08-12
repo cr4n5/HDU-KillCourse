@@ -1,4 +1,4 @@
-package main
+package course
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"github.com/cr4n5/HDU-KillCourse/client"
 	"github.com/cr4n5/HDU-KillCourse/config"
 	"github.com/cr4n5/HDU-KillCourse/log"
+	"github.com/cr4n5/HDU-KillCourse/pkg/login"
 	"github.com/cr4n5/HDU-KillCourse/util"
 )
 
@@ -139,7 +140,7 @@ func GetIsCourseOk(c *client.Client, cfg *config.Config, course *client.GetCours
 }
 
 // WaitCourse 蹲课
-func WaitCourse(ctx context.Context, c *client.Client, cfg *config.Config, course *client.GetCourseResp) {
+func WaitCourse(ctx context.Context, channel chan string, c *client.Client, cfg *config.Config, course *client.GetCourseResp) {
 	defer func() {
 		channel <- "完成"
 	}()
@@ -191,7 +192,7 @@ func WaitCourse(ctx context.Context, c *client.Client, cfg *config.Config, cours
 
 					log.Info("重新登录...")
 					// 重新登录
-					c, err = Login(cfg)
+					c, err = login.Login(cfg)
 					if err != nil {
 						log.Error("登录失败...")
 						SendEmail(cfg, "登录失败", "登录失败,程序停止,请检查")

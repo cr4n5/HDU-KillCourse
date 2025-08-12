@@ -1,4 +1,4 @@
-package main
+package course
 
 import (
 	"context"
@@ -192,7 +192,7 @@ func HandleCourse(c *client.Client, cfg *config.Config, course *client.GetCourse
 }
 
 // KillCourse 选退课
-func KillCourse(ctx context.Context, c *client.Client, cfg *config.Config, course *client.GetCourseResp) {
+func KillCourse(ctx context.Context, channel chan string, c *client.Client, cfg *config.Config, course *client.GetCourseResp) {
 	// 计算需要等待的时间
 	// 时区
 	loc, err := time.LoadLocation("Asia/Shanghai")
