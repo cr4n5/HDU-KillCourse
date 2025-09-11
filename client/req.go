@@ -243,6 +243,7 @@ type SelectCourseReq struct {
 	ZyhID    string
 	NjdmIDXs string
 	ZyhIDXs  string
+	XkkzID   string
 }
 
 // ToFormData 转换为表单数据
@@ -255,6 +256,7 @@ func (req *SelectCourseReq) ToFormData() url.Values {
 		"zyh_id":     {req.ZyhID},
 		"njdm_id_xs": {req.NjdmIDXs},
 		"zyh_id_xs":  {req.ZyhIDXs},
+		"xkkz_id":    {req.XkkzID},
 	}
 }
 

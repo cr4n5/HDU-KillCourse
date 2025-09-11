@@ -67,6 +67,7 @@ func SelectCourse(c *client.Client, JxbIds string, KchId string, Kklxdm string, 
 		JxbIDs: JxbIds,
 		KchID:  KchId,
 		Qz:     "0",
+		XkkzID:   c.ClientBodyConfig.XkkzId[Kklxdm],
 	}
 
 	// 若为主修课程
