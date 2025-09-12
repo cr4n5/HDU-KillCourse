@@ -62,6 +62,12 @@ type SelectCourseResq struct {
 type SearchCourseResp struct {
 	TmpList []struct {
 		Jxbmc string `json:"jxbmc"`
+		// Kklxmc string `json:"kklxmc"`
+		// KchID  string `json:"kch_id"`
+		// JxbID  string `json:"jxb_id"`
+		// Jxbzc  string `json:"jxbzc"`
+		// Kcmc   string `json:"kcmc"` // 课程名称
+		// Sksj   string `json:"sksj"` // 上课时间
 	} `json:"tmpList"`
 }
 
