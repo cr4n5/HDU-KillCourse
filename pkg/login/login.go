@@ -62,7 +62,7 @@ func CasPassWordLogin(c *client.Client, cfg *config.Config) error {
 	}
 
 	// 加密密码
-	encryptedPassword, err := util.DesEncrypt(croypto, cfg.CasLogin.Password)
+	encryptedPassword, err := util.AesEncrypt(croypto, cfg.CasLogin.Password)
 	if err != nil {
 		return err
 	}
@@ -84,7 +84,7 @@ func CasPassWordLogin(c *client.Client, cfg *config.Config) error {
 		return err
 	}
 	// 判断是否登录成功
-	if strings.Contains(result, "用户名密码登录") {
+	if strings.Contains(result, "统一身份认证") {
 		return errors.New("用户名或密码不正确！")
 	}
 
