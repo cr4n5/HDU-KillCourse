@@ -4,9 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -133,52 +131,6 @@ func CancelCourse(c *client.Client, JxbIds string, KchId string, XueNian string,
 	return nil
 }
 
-// GetCourseOnline 在线获取课程
-func GetCourseOnline(c *client.Client, cfg *config.Config, CourseName string) (*client.GetCourseResp, error) {
-	// 初始化请求
-	XueNian := cfg.Time.XueNian
-	intXueNian, err := strconv.Atoi(XueNian)
-	if err != nil {
-		return nil, errors.New("学年格式错误")
-	}
-	xnmc := fmt.Sprintf("%s-%s", XueNian, strconv.Itoa(intXueNian+1))
-	xqmc := cfg.Time.XueQi
-	var xqm string
-	if xqmc == "1" {
-		xqm = "3"
-	} else if xqmc == "2" {
-		xqm = "12"
-	} else {
-		return nil, errors.New("学期格式错误")
-	}
-	req := &client.GetCourseReq{
-		Cxfs:        "1",
-		Zymc:        "全部",
-		Xnmc:        xnmc,
-		Xqmc:        xqmc,
-		Kkxymc:      "全部",
-		Jgmc:        "全部",
-		Ywtk:        "0",
-		Skfs:        "0",
-		Xnm:         XueNian,
-		Xqm:         xqm,
-		Search:      "false",
-		Nd:          fmt.Sprintf("%d", time.Now().Unix()),
-		ShowCount:   "9999",
-		CurrentPage: "1",
-		SortOrder:   "asc",
-		Time:        "0",
-		Jxbmc:       CourseName,
-	}
-
-	// 获取课程信息
-	courseResp, _, err := c.GetCourse(req)
-	if err != nil {
-		return nil, err
-	}
-	return courseResp, nil
-}
-
 // HandleCourse 处理课程
 func HandleCourse(c *client.Client, cfg *config.Config, course *client.GetCourseResp, CourseName string, SelectFlag interface{}) error {
 	if course == nil || len(course.Items) == 0 {
@@ -243,7 +195,7 @@ func HandleCourse(c *client.Client, cfg *config.Config, course *client.GetCourse
 
 	log.Error("教学班名称: ", CourseName, " 于本地课程列表不存在  将在线获取课程信息...")
 	// 在线获取课程
-	onlineCourse, err := GetCourseOnline(c, cfg, CourseName)
+	onlineCourse, _, err := GetCourseOnline(c, cfg, CourseName)
 	if err != nil {
 		return err
 	}
@@ -273,7 +225,6 @@ func KillCourse(ctx context.Context, channel chan string, c *client.Client, cfg 
 		return
 	case <-time.After(time.Duration(waitTime) * time.Second):
 		log.Info("时间已到，开始处理课程...")
-		//go func() {
 		for {
 			select {
 			case <-ctx.Done():
@@ -317,7 +268,6 @@ func KillCourse(ctx context.Context, channel chan string, c *client.Client, cfg 
 				return
 			}
 		}
-		//}()
 	}
 }
 
