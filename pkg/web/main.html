@@ -70,7 +70,7 @@
     <div class="container">
         <form id="configForm">
             <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
-                <h1 style="margin: 0;">CAS 登录</h1>
+                <h1 style="margin: 0;">CAS 登录 (数字杭电账号)</h1>
                 <label for="casPriority" style="margin: 0;">
                     <input type="checkbox" id="casPriority" name="priority" onclick="togglePriority('casPriority')" checked>
                     CAS 登录优先
@@ -97,7 +97,7 @@
 
             <div class="form-group" id="newJwGroup" style="display: block;">
                 <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
-                    <h1 style="margin: 0;">NewJW 登录</h1>
+                    <h1 style="margin: 0;">NewJW 登录 (新正方教务系统账号)</h1>
                     <label for="newjwPriority" style="margin: 0;">
                         <input type="checkbox" id="newjwPriority" name="priority" onclick="togglePriority('newjwPriority')">
                         NewJW 登录优先
@@ -138,7 +138,7 @@
 
             <div class="form-group">
                 <h1 style="text-align: left;">学年学期设置</h1>
-                <h3>(! 注意: 为所选课程所在的学年学期，如2024-2025-1)</h3>
+                <h3>(! 注意: 为所选课程所在的学年学期，如2024-2025-1即填写2024与1)</h3>
                 <label for="xueNian">学年</label>
                 <input type="text" id="xueNian" name="xueNian" value="2024">
             </div>
@@ -174,12 +174,12 @@
 
             <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
                 <h1 style="margin: 0;">蹲课设置</h1>
-                <h3>(! 注意：开启后将蹲课程列表中打勾的课程，不再进行抢课)</h3>
                 <label for="waitCoursePriority" style="margin: 0;">
                     <input type="checkbox" id="waitCoursePriority" name="priority" onclick="toggleIntervalVisibility()">
                     启用蹲课
                 </label>
             </div>
+            <h3>(! 注意：开启后不再进行定时退选课,将蹲选课程列表中打勾的课程,若有余量立即选课)</h3>
             <div class="form-group" id="intervalGroup" style="display: none;">
                 <label for="interval">查询课程间隔时间，单位秒</label>
                 <input type="text" id="interval" name="interval" value="60">
@@ -221,7 +221,7 @@
             <div class="form-group" id="startTimeGroup" style="display: block;">
                 <div class="form-group">
                     <h1 style="text-align: left;">开始时间设置</h1>
-                    <label for="startTime">抢课开始时间 (格式: YYYY-MM-DD HH:mm:ss)</label>
+                    <label for="startTime">选课开始时间 (格式: YYYY-MM-DD HH:mm:ss)</label>
                     <input type="text" id="startTime" name="startTime" value="2024-07-25 12:00:00">
                 </div>
 
@@ -232,7 +232,7 @@
         </form>
     </div>
     <div class="footer">
-        © 2025 HDU-KillCourse 配置编辑
+        © 2026 crane
     </div>
 
     <script>

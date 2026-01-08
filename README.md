@@ -33,17 +33,16 @@ go build
 
 2. 修改配置
 
-`Web编辑配置`
+`Web编辑配置` :star: `推荐`
 
-- click 可执行文件
+- 执行可执行文件
 - 访问 http://localhost:6688 (默认端口) ，即可进入配置页面。
 
 ![Web编辑配置](./Doc/img/webEdit.png)
 
 `手动编辑配置`
 
-- 下载 [config.example.json](./config.example.json) 文件。
-- 进入 [config.example.json](./config.example.json) 文件，修改对应内容。
+- 下载 [config.example.json](./config.example.json) 文件，修改对应内容。
 - 配置名更改为 config.json。
 
 ```
@@ -62,10 +61,10 @@ go build
     "cookies": { //若 JSESSIONID为空 或 route为空 或 enabled为0，则将不会使用cookies登录
         "JSESSIONID": "",// 每次登录cookie参数都会自动更新
         "route": "",
-        "enabled": "1"//如若登录过期，程序重启大法
+        "enabled": "1"//如若长时间未使用执行出错，值置为0启动程序重启大法
     },
     "time": {
-        "XueNian": "2024",//所选课程所在的学年学期，如2024-2025-1
+        "XueNian": "2024",//所选课程所在的学年学期，如2024-2025-1即填写2024与1
         "XueQi": "1"
     },
     //课程教学班名称，如(2024-2025-1)-C2092011-01
@@ -80,7 +79,7 @@ go build
     },
     "wait_course": {
         "interval": 60, //查询课程间隔时间，单位秒
-        "enabled": "0" //是否开启蹲课，开启后将蹲course中值为1的课程，不再进行抢课
+        "enabled": "0" //是否开启蹲课，开启后不再进行定时退选课,将蹲选课程列表中打勾的课程,若有余量立即选课
     }, 
     "smtp_email": { //邮件通知，开启后将会在蹲选课成功后发送邮件通知
         "host": "smtp.qq.com", //smtp服务器
@@ -95,17 +94,17 @@ go build
 
 3. 选课
 
-- 选课之前，<a href='https://github.com/cr4n5/HDU-course_list'>任务落实课程导出（已合并在此项目中）</a>，排好课表，获取课程教学班名称
+- 选课之前，<a href='https://github.com/cr4n5/HDU-course_list'>任务落实课程导出（已合并在此项目中，获取课程信息后会在本目录生成Excel）</a>，排好课表，获取课程教学班名称
 
 > [!NOTE]
 >
-> 需在任务落实查询开放后，并在选课之前（省去在选课时查询课程请求）执行一次可执行文件获取课程信息
+> 需在任务落实查询开放后，并在选课之前执行一次可执行文件获取课程信息，第一次获取时间较长
 
 > [!CAUTION]
 >
 > 执行期间请勿在他处登录教务系统，如要登录，请将浏览器与配置Cookies同步
 
-- 保证可执行文件和config.json在同一级目录下，然后在开始前几分钟执行可执行文件即可
+- 保证`可执行文件`、`config.json`、`course.json`在同一级目录下，于开始前几分钟执行可执行文件即可
 
 ## 协议
 

@@ -13,4 +13,4 @@ var (
 )
 
 // Version 当前版本
-const Version = "v1.4.7"
+const Version = "v1.4.8"
