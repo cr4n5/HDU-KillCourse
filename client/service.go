@@ -146,7 +146,7 @@ func (c *Client) CasLoginPost(req *CasLoginReq) (string, error) {
 
 // CasLoginNewjw cas登录newjw
 func (c *Client) CasLoginNewjw() (string, error) {
-	new_jw := "https://newjw.hdu.edu.cn/sso/driot4login"
+	new_jw := "https://sso.hdu.edu.cn/login?service=http://newjw.hdu.edu.cn/sso/driot4login"
 	// 通过cas登录newjw
 	result, _, err := c.Get(new_jw, nil)
 	if err != nil {
