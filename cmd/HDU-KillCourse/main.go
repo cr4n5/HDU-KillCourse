@@ -65,6 +65,21 @@ func main() {
 	}
 	log.Info("获取课程信息成功...")
 
+	// 课程自动排序：退课先于与其冲突的选课执行（course_sort_enabled置1开启，默认保持手动排序）
+	if cfg.CourseSortEnabled == "1" {
+		log.Info("开始课程自动排序...")
+		if err := course.AutoSortCourses(cfg, courses); err != nil {
+			log.Error("课程自动排序失败: ", err)
+		}
+	}
+
+	// 生成ICS日历文件（设置semester_start_date后开启）
+	if cfg.SemesterStartDate != "" {
+		if err := course.ExportIcsFiles(cfg); err != nil {
+			log.Error("生成ICS日历失败: ", err)
+		}
+	}
+
 	cancelCtx, cancel := context.WithCancel(ctx)
 	// 捕获终止信号
 	stopChan := make(chan os.Signal, 1)

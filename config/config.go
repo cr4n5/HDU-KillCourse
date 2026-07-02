@@ -21,6 +21,8 @@ type Config struct {
 	StartTime               string `json:"start_time"`
 	ClientBodyConfigEnabled string `json:"ClientBodyConfigEnabled,omitempty"`
 	CrossGradeEnabled       string `json:"CrossGradeEnabled,omitempty"`
+	CourseSortEnabled       string `json:"course_sort_enabled,omitempty"` // 置1开启课程自动排序(退课先于冲突的选课)
+	SemesterStartDate       string `json:"semester_start_date,omitempty"` // 第1周星期一日期(YYYY-MM-DD)，设置后可生成ICS日历
 }
 
 // CasLogin CAS 登录配置

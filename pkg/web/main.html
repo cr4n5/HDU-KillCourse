@@ -151,22 +151,20 @@
 
             <div class="form-group" style="display: flex; align-items: center; justify-content: space-between;">
                 <h1 style="margin: 0;">课程设置</h1>
-                <label for="addCourse" style="margin: 0;">
-                    <button type="button" id="addCourse" onclick="addCourseRow()" style="padding: 5px 10px; font-size: 14px;">新增课程</button>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" id="sortCourse" onclick="autoSortCourses()" style="padding: 5px 10px; font-size: 14px; width: auto;">自动排序</button>
+                    <button type="button" id="addCourse" onclick="addCourseRow()" style="padding: 5px 10px; font-size: 14px; width: auto;">新增课程</button>
+                </div>
+            </div>
+            <h3>(! 注意：课程按顺序执行。自动排序将使退课先于与其冲突的选课执行；也可用 ↑↓ 手动调整顺序)</h3>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="courseSortEnabled" name="courseSortEnabled">
+                    程序运行时自动排序课程(不勾选则保持下方手动顺序)
                 </label>
             </div>
-            <h3>(! 注意：课程按顺序执行)</h3>
             <div class="form-group">
                 <div id="courseContainer">
-                    <!-- 示例课程行 -->
-                    <div class="course-row" style="display: flex; align-items: center; margin-bottom: 10px;">
-                        <input type="text" class="course-input" value="(2024-2025-1)-C2092011-01" style="flex: 1; margin-right: 10px;">
-                        <label style="margin-right: 10px;">
-                            <input type="checkbox" class="course-checkbox" checked>
-                            打勾为选课,反之退课
-                        </label>
-                        <button type="button" onclick="deleteCourseRow(this)" style="padding: 5px 10px; font-size: 14px; width: auto;">删除</button>
-                    </div>
                 </div>
             </div>
 
@@ -228,6 +226,18 @@
                 <hr style="border: 1px solid #ccc; margin: 20px 0;">
             </div>
 
+            <div class="form-group">
+                <h1 style="text-align: left;">ICS日历导出</h1>
+                <h3>(! 注意：为课程列表中选课的课程生成日历，每次上课为独立日历事件，可导入Apple/Google日历)</h3>
+                <label for="semesterStartDate">第1周星期一日期 (格式: YYYY-MM-DD，设置后程序运行时也会自动生成)</label>
+                <input type="text" id="semesterStartDate" name="semesterStartDate" value="">
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button type="button" onclick="exportIcs()" style="width: auto; padding: 5px 10px; font-size: 14px;">下载ICS日历</button>
+                </div>
+            </div>
+
+            <hr style="border: 1px solid #ccc; margin: 20px 0;">
+
             <button type="button" onclick="submitConfig()">保存配置</button>
         </form>
     </div>
@@ -236,27 +246,127 @@
     </div>
 
     <script>
+        // 课程信息缓存: 教学班名称 -> {kcmc, sksj, ...}，用于显示课程名
+        let courseInfoMap = {};
+
+        // 拉取本地课程信息(course.json或任务落实情况Excel)，用于按课程编号显示课程名
+        function loadCourseInfo() {
+            fetch('/getCourseInfo')
+            .then(response => response.ok ? response.json() : {})
+            .then(info => {
+                courseInfoMap = info || {};
+                document.querySelectorAll('.course-row .course-input').forEach(updateCourseName);
+            })
+            .catch(() => { courseInfoMap = {}; });
+        }
+
+        // 根据输入的课程编号显示课程名与上课时间
+        function updateCourseName(input) {
+            const row = input.closest('.course-row');
+            const nameSpan = row.querySelector('.course-name');
+            const info = courseInfoMap[input.value.trim()];
+            if (info) {
+                nameSpan.textContent = info.kcmc + (info.sksj ? ' | ' + info.sksj : '');
+                nameSpan.style.color = '#28a745';
+            } else {
+                nameSpan.textContent = input.value.trim() ? '未找到课程信息' : '';
+                nameSpan.style.color = '#999';
+            }
+        }
+
+        // 创建课程行
+        function createCourseRow(courseId, enabled) {
+            const newRow = document.createElement('div');
+            newRow.className = 'course-row';
+            newRow.style = 'margin-bottom: 10px;';
+            newRow.innerHTML = `
+                <div style="display: flex; align-items: center;">
+                    <input type="text" class="course-input" placeholder="输入课程编号" style="flex: 1; margin-right: 10px;" oninput="updateCourseName(this)">
+                    <label style="margin-right: 10px; white-space: nowrap;">
+                        <input type="checkbox" class="course-checkbox">
+                        打勾为选课,反之退课
+                    </label>
+                    <button type="button" onclick="moveCourseRow(this, -1)" style="padding: 5px 8px; font-size: 14px; width: auto; margin-right: 4px;">↑</button>
+                    <button type="button" onclick="moveCourseRow(this, 1)" style="padding: 5px 8px; font-size: 14px; width: auto; margin-right: 4px;">↓</button>
+                    <button type="button" onclick="deleteCourseRow(this)" style="padding: 5px 10px; font-size: 14px; width: auto;">删除</button>
+                </div>
+                <span class="course-name" style="font-size: 12px; color: #999; margin-left: 2px;"></span>
+            `;
+            newRow.querySelector('.course-input').value = courseId || '';
+            newRow.querySelector('.course-checkbox').checked = enabled !== "0";
+            return newRow;
+        }
+
         // 课程设置  添加行课程
         function addCourseRow() {
             const courseContainer = document.getElementById('courseContainer');
-            const newRow = document.createElement('div');
-            newRow.className = 'course-row';
-            newRow.style = 'display: flex; align-items: center; margin-bottom: 10px;';
-            newRow.innerHTML = `
-                <input type="text" class="course-input" placeholder="输入课程编号" style="flex: 1; margin-right: 10px;">
-                <label  style="margin-right: 10px;">
-                    <input type="checkbox" class="course-checkbox" checked>
-                    打勾为选课,反之退课
-                </label>
-                <button type="button" onclick="deleteCourseRow(this)" style="padding: 5px 10px; font-size: 14px; width: auto;">删除</button>
-            `;
-            courseContainer.appendChild(newRow);
+            courseContainer.appendChild(createCourseRow('', "1"));
         }
 
         // 删除课程行
         function deleteCourseRow(button) {
-            const row = button.parentElement; // 获取当前行
-            row.remove(); // 删除当前行
+            button.closest('.course-row').remove();
+        }
+
+        // 上下移动课程行，手动调整执行顺序
+        function moveCourseRow(button, direction) {
+            const row = button.closest('.course-row');
+            if (direction === -1 && row.previousElementSibling) {
+                row.parentElement.insertBefore(row, row.previousElementSibling);
+            } else if (direction === 1 && row.nextElementSibling) {
+                row.parentElement.insertBefore(row.nextElementSibling, row);
+            }
+        }
+
+        // 收集当前课程列表 [[教学班名称, 值]...]
+        function collectCoursePairs() {
+            const pairs = [];
+            document.querySelectorAll('.course-row').forEach(row => {
+                const id = row.querySelector('.course-input').value.trim();
+                const value = row.querySelector('.course-checkbox').checked ? "1" : "0";
+                if (id) pairs.push([id, value]);
+            });
+            return pairs;
+        }
+
+        // 渲染课程列表
+        function renderCoursePairs(pairs) {
+            const courseContainer = document.getElementById('courseContainer');
+            courseContainer.innerHTML = '';
+            pairs.forEach(([courseId, enabled]) => {
+                courseContainer.appendChild(createCourseRow(courseId, enabled));
+            });
+            document.querySelectorAll('.course-row .course-input').forEach(updateCourseName);
+        }
+
+        // 自动排序课程：退课先于与其时间冲突(或同课程号)的选课
+        function autoSortCourses() {
+            fetch('/sortCourses', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(collectCoursePairs())
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(msg => { throw new Error(msg || '排序失败！'); });
+                }
+                return response.json();
+            })
+            .then(sorted => {
+                renderCoursePairs(sorted);
+                alert('自动排序完成！保存配置后生效。');
+            })
+            .catch(error => alert('自动排序失败: ' + error.message));
+        }
+
+        // 下载ICS日历文件
+        function exportIcs() {
+            const startDate = document.getElementById('semesterStartDate').value.trim();
+            if (!startDate) {
+                alert('请先填写第1周星期一日期并保存配置！');
+                return;
+            }
+            window.location.href = '/exportIcs';
         }
 
         // cas 和 NewJW 登录优先级切换
@@ -316,7 +426,7 @@
             const courseRows = document.querySelectorAll('.course-row');
             const courses = new Map();
             courseRows.forEach(row => {
-                const courseInput = row.querySelector('.course-input').value;
+                const courseInput = row.querySelector('.course-input').value.trim();
                 const courseCheckbox = row.querySelector('.course-checkbox').checked ? "1" : "0";
                 if (courseInput) {
                     courses.set(courseInput, courseCheckbox);
@@ -359,7 +469,9 @@
                     to: document.getElementById('smtpTo').value,
                     enabled: document.getElementById('smtpEnabled').checked ? "1" : "0"
                 },
-                start_time: document.getElementById('startTime').value
+                start_time: document.getElementById('startTime').value,
+                course_sort_enabled: document.getElementById('courseSortEnabled').checked ? "1" : "0",
+                semester_start_date: document.getElementById('semesterStartDate').value.trim()
             };
 
             fetch('/saveConfig', {
@@ -422,22 +534,14 @@
                 document.getElementById('xueQi').value = config.time.XueQi || '';
 
                 // 填充课程数据
-                const courseContainer = document.getElementById('courseContainer');
-                courseContainer.innerHTML = ''; // 清空现有课程行
-                (config.course || []).forEach(([courseId, enabled]) => {
-                    const newRow = document.createElement('div');
-                    newRow.className = 'course-row';
-                    newRow.style = 'display: flex; align-items: center; margin-bottom: 10px;';
-                    newRow.innerHTML = `
-                        <input type="text" class="course-input" value="${courseId}" style="flex: 1; margin-right: 10px;">
-                        <label style="margin-right: 10px;">
-                            <input type="checkbox" class="course-checkbox" ${enabled === "1" ? 'checked' : ''}>
-                            打勾为选课,反之退课
-                        </label>
-                        <button type="button" onclick="deleteCourseRow(this)" style="padding: 5px 10px; font-size: 14px; width: auto;">删除</button>
-                    `;
-                    courseContainer.appendChild(newRow);
-                });
+                renderCoursePairs(config.course || []);
+
+                // 填充课程自动排序与ICS设置
+                document.getElementById('courseSortEnabled').checked = config.course_sort_enabled === "1";
+                document.getElementById('semesterStartDate').value = config.semester_start_date || '';
+
+                // 拉取课程信息，显示课程名
+                loadCourseInfo();
 
                 // 填充蹲课设置数据
                 document.getElementById('waitCoursePriority').checked = config.wait_course.enabled === "1";

@@ -9,6 +9,7 @@ import (
 
 	"github.com/cr4n5/HDU-KillCourse/config"
 	"github.com/cr4n5/HDU-KillCourse/log"
+	"github.com/cr4n5/HDU-KillCourse/pkg/course"
 	"github.com/iancoleman/orderedmap"
 )
 
@@ -42,14 +43,16 @@ func arrayListToOrderedMap(arrayList [][]string) *orderedmap.OrderedMap {
 }
 
 type WebConfig struct {
-	CasLogin   config.CasLogin   `json:"cas_login"`
-	NewjwLogin config.NewjwLogin `json:"newjw_login"`
-	Cookies    config.Cookies    `json:"cookies"`
-	Time       config.Time       `json:"time"`
-	Course     [][]string        `json:"course"` // 使用二维数组列表来存储课程信息
-	WaitCourse config.WaitCourse `json:"wait_course"`
-	SmtpEmail  config.SmtpEmail  `json:"smtp_email"`
-	StartTime  string            `json:"start_time"`
+	CasLogin          config.CasLogin   `json:"cas_login"`
+	NewjwLogin        config.NewjwLogin `json:"newjw_login"`
+	Cookies           config.Cookies    `json:"cookies"`
+	Time              config.Time       `json:"time"`
+	Course            [][]string        `json:"course"` // 使用二维数组列表来存储课程信息
+	WaitCourse        config.WaitCourse `json:"wait_course"`
+	SmtpEmail         config.SmtpEmail  `json:"smtp_email"`
+	StartTime         string            `json:"start_time"`
+	CourseSortEnabled string            `json:"course_sort_enabled"`
+	SemesterStartDate string            `json:"semester_start_date"`
 }
 
 func StartWebServer() {
@@ -90,14 +93,16 @@ func StartWebServer() {
 		courseArray := orderedMapToArrayList(cfg.Course)
 		// 创建 WebConfig 对象
 		webCfg = WebConfig{
-			CasLogin:   cfg.CasLogin,
-			NewjwLogin: cfg.NewjwLogin,
-			Cookies:    cfg.Cookies,
-			Time:       cfg.Time,
-			Course:     courseArray,
-			WaitCourse: cfg.WaitCourse,
-			SmtpEmail:  cfg.SmtpEmail,
-			StartTime:  cfg.StartTime,
+			CasLogin:          cfg.CasLogin,
+			NewjwLogin:        cfg.NewjwLogin,
+			Cookies:           cfg.Cookies,
+			Time:              cfg.Time,
+			Course:            courseArray,
+			WaitCourse:        cfg.WaitCourse,
+			SmtpEmail:         cfg.SmtpEmail,
+			StartTime:         cfg.StartTime,
+			CourseSortEnabled: cfg.CourseSortEnabled,
+			SemesterStartDate: cfg.SemesterStartDate,
 		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(webCfg)
@@ -121,6 +126,8 @@ func StartWebServer() {
 		cfg.WaitCourse = webCfg.WaitCourse
 		cfg.SmtpEmail = webCfg.SmtpEmail
 		cfg.StartTime = webCfg.StartTime
+		cfg.CourseSortEnabled = webCfg.CourseSortEnabled
+		cfg.SemesterStartDate = webCfg.SemesterStartDate
 		// 验证配置
 		err = cfg.Validate()
 		if err != nil {
@@ -135,6 +142,71 @@ func StartWebServer() {
 		}
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("配置保存成功"))
+	})
+
+	// 获取课程信息(教学班名称 -> 课程名/上课时间)，用于网页显示课程名
+	http.HandleFunc("/getCourseInfo", func(w http.ResponseWriter, r *http.Request) {
+		cfgLocal, err := config.LoadConfig()
+		if err != nil {
+			http.Error(w, "无法读取配置文件: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		idx, err := course.LoadCourseIndex(cfgLocal)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(idx)
+	})
+
+	// 自动排序课程：接收[[教学班名称,值]...]，返回排序结果(退课先于冲突的选课)
+	http.HandleFunc("/sortCourses", func(w http.ResponseWriter, r *http.Request) {
+		var pairs [][]string
+		if err := json.NewDecoder(r.Body).Decode(&pairs); err != nil {
+			http.Error(w, "无法解析课程列表: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+		cfgLocal, err := config.LoadConfig()
+		if err != nil {
+			http.Error(w, "无法读取配置文件: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		idx, err := course.LoadCourseIndex(cfgLocal)
+		if err != nil {
+			// 无本地课程信息时仍可排序，只按课程号判断冲突
+			idx = course.CourseIndex{}
+		}
+		sorted := course.SortCoursePairs(pairs, idx)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(sorted)
+	})
+
+	// 导出ICS日历文件
+	http.HandleFunc("/exportIcs", func(w http.ResponseWriter, r *http.Request) {
+		cfgLocal, err := config.LoadConfig()
+		if err != nil {
+			http.Error(w, "无法读取配置文件: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if cfgLocal.SemesterStartDate == "" {
+			http.Error(w, "请先在配置中设置第1周星期一日期(semester_start_date)并保存", http.StatusBadRequest)
+			return
+		}
+		idx, err := course.LoadCourseIndex(cfgLocal)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		content, err := course.GenerateICS(cfgLocal, idx)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		fileName := fmt.Sprintf("timetable_%s.ics", course.XnXqName(cfgLocal))
+		w.Header().Set("Content-Type", "text/calendar; charset=utf-8")
+		w.Header().Set("Content-Disposition", "attachment; filename="+fileName)
+		w.Write([]byte(content))
 	})
 
 	log.Info("访问该地址编辑配置: http://localhost:" + fmt.Sprintf("%d", port))
