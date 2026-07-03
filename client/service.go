@@ -460,6 +460,24 @@ func (c *Client) GetStuInfo() error {
 	return nil
 }
 
+// GetPersonalSchedule 获取个人完整课表(含教务处预置分配的课程)
+// xnm 学年(如"2026")，xqm 学期码("3"=第1学期,"12"=第2学期)
+func (c *Client) GetPersonalSchedule(xnm string, xqm string) (*GetScheduleResp, error) {
+	url := fmt.Sprintf("https://newjw.hdu.edu.cn/jwglxt/kbcx/xskbcx_cxXsgrkb.html?gnmkdm=N2151&xnm=%s&xqm=%s", xnm, xqm)
+	result, _, err := c.Get(url, nil)
+	if err != nil {
+		return nil, err
+	}
+	if strings.Contains(string(result), "统一身份认证") {
+		return nil, errors.New("可能登录过期")
+	}
+	var resp GetScheduleResp
+	if err := json.Unmarshal(result, &resp); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
 func (c *Client) GetZyhIdByBh(id string) (string, error) {
 	url := fmt.Sprintf("https://newjw.hdu.edu.cn/jwglxt/xtgl/comm_cxBjdmList.html?&bh=%s", id)
 	result, _, err := c.Get(url, nil)

@@ -75,8 +75,13 @@ func main() {
 
 	// 生成ICS日历文件（设置semester_start_date后开启）
 	if cfg.SemesterStartDate != "" {
+		// 选课课程日历(来源course.json/Excel，不含预置分配课程)
 		if err := course.ExportIcsFiles(cfg); err != nil {
 			log.Error("生成ICS日历失败: ", err)
+		}
+		// 个人完整课表日历(在线拉取，含教务处预置分配课程)
+		if err := course.ExportPersonalTimetableICS(c, cfg); err != nil {
+			log.Error("生成个人完整课表ICS失败: ", err)
 		}
 	}
 

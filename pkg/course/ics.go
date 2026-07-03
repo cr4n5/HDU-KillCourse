@@ -73,18 +73,27 @@ type sessionEvent struct {
 	desc     string
 }
 
-// buildEvents 由配置中的选课课程生成全部单次上课事件
-func buildEvents(cfg *config.Config, idx CourseIndex) ([]sessionEvent, error) {
+// semesterMonday 解析配置中的第1周星期一日期与时区
+func semesterMonday(cfg *config.Config) (time.Time, *time.Location, error) {
 	loc, err := time.LoadLocation("Asia/Shanghai")
 	if err != nil {
 		loc = time.FixedZone("CST", 8*3600)
 	}
-	weekOneMonday, err := time.ParseInLocation("2006-01-02", cfg.SemesterStartDate, loc)
+	m, err := time.ParseInLocation("2006-01-02", cfg.SemesterStartDate, loc)
 	if err != nil {
-		return nil, errors.New("semester_start_date格式错误，应为YYYY-MM-DD(第1周星期一): " + cfg.SemesterStartDate)
+		return time.Time{}, loc, errors.New("semester_start_date格式错误，应为YYYY-MM-DD(第1周星期一): " + cfg.SemesterStartDate)
 	}
-	if weekOneMonday.Weekday() != time.Monday {
+	if m.Weekday() != time.Monday {
 		log.Info("Notice！: semester_start_date不是星期一，请确认其为第1周星期一的日期")
+	}
+	return m, loc, nil
+}
+
+// buildEvents 由配置中的选课课程生成全部单次上课事件
+func buildEvents(cfg *config.Config, idx CourseIndex) ([]sessionEvent, error) {
+	weekOneMonday, loc, err := semesterMonday(cfg)
+	if err != nil {
+		return nil, err
 	}
 
 	var events []sessionEvent

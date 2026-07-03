@@ -99,3 +99,23 @@ type GetStuInfoResp struct {
 type GetZyhIdByBhResp []struct {
 	ZyhID string `json:"zyh_id"`
 }
+
+// ScheduleItem 个人课表中的一门课（xskbcx_cxXsgrkb.html 的 kbList 项）
+type ScheduleItem struct {
+	Kcmc  string `json:"kcmc"`  // 课程名称
+	Xqjmc string `json:"xqjmc"` // 星期几名称，如"星期二"
+	Xqj   string `json:"xqj"`   // 星期几数字，如"2"
+	Jcs   string `json:"jcs"`   // 节次，如"3-5"
+	Jc    string `json:"jc"`    // 节次(备用字段)
+	Zcd   string `json:"zcd"`   // 周次描述，如"1-17周"、"1-17周(单)"
+	Cdmc  string `json:"cdmc"`  // 场地名称(教室)
+	Xm    string `json:"xm"`    // 教师姓名
+	Jxbmc string `json:"jxbmc"` // 教学班名称
+	Kch   string `json:"kch"`   // 课程号
+}
+
+// GetScheduleResp 个人课表查询响应
+type GetScheduleResp struct {
+	KbList  []ScheduleItem `json:"kbList"`  // 理论课
+	SjkList []ScheduleItem `json:"sjkList"` // 实践课
+}

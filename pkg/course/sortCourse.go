@@ -41,30 +41,35 @@ func ParseSksj(sksj string) []TimeSlot {
 		if m[3] != "" {
 			p2, _ = strconv.Atoi(m[3])
 		}
-		weeks := make(map[int]bool)
-		for _, seg := range strings.Split(m[4], ",") {
-			wm := weekSegRe.FindStringSubmatch(strings.TrimSpace(seg))
-			if wm == nil {
-				continue
-			}
-			w1, _ := strconv.Atoi(wm[1])
-			w2 := w1
-			if wm[2] != "" {
-				w2, _ = strconv.Atoi(wm[2])
-			}
-			for w := w1; w <= w2; w++ {
-				if wm[3] == "单" && w%2 == 0 {
-					continue
-				}
-				if wm[3] == "双" && w%2 == 1 {
-					continue
-				}
-				weeks[w] = true
-			}
-		}
-		slots = append(slots, TimeSlot{Day: day, P1: p1, P2: p2, Weeks: weeks})
+		slots = append(slots, TimeSlot{Day: day, P1: p1, P2: p2, Weeks: parseWeeks(m[4])})
 	}
 	return slots
+}
+
+// parseWeeks 解析周次描述，如 "1-17周"、"1-17周(单)"、"1-3周,5-17周"
+func parseWeeks(s string) map[int]bool {
+	weeks := make(map[int]bool)
+	for _, seg := range strings.Split(s, ",") {
+		wm := weekSegRe.FindStringSubmatch(strings.TrimSpace(seg))
+		if wm == nil {
+			continue
+		}
+		w1, _ := strconv.Atoi(wm[1])
+		w2 := w1
+		if wm[2] != "" {
+			w2, _ = strconv.Atoi(wm[2])
+		}
+		for w := w1; w <= w2; w++ {
+			if wm[3] == "单" && w%2 == 0 {
+				continue
+			}
+			if wm[3] == "双" && w%2 == 1 {
+				continue
+			}
+			weeks[w] = true
+		}
+	}
+	return weeks
 }
 
 // slotsOverlap 两段时间是否冲突：同一天、节次相交、周次相交
