@@ -65,6 +65,14 @@ func main() {
 	}
 	log.Info("获取课程信息成功...")
 
+	// 课程自动排序：退课先于与其冲突的选课执行（course_sort_enabled置1开启，默认保持手动排序）
+	if cfg.CourseSortEnabled == "1" {
+		log.Info("开始课程自动排序...")
+		if err := course.AutoSortCourses(cfg, courses); err != nil {
+			log.Error("课程自动排序失败: ", err)
+		}
+	}
+
 	cancelCtx, cancel := context.WithCancel(ctx)
 	// 捕获终止信号
 	stopChan := make(chan os.Signal, 1)
@@ -84,5 +92,10 @@ func main() {
 	case <-channel:
 		log.Info("此程序已完成，正在退出...")
 		cancel()
+		// 抢课完成后依据最新课表生成ICS日历：反映实际选课结果，
+		// 自动排除未选上的备选教学班，并包含教务处预置分配的课程。
+		if err := course.ExportTimetableICS(c, cfg); err != nil {
+			log.Error("生成课表ICS失败: ", err)
+		}
 	}
 }

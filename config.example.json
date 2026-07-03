@@ -38,5 +38,7 @@
         "to": "...@qq.com",
         "enabled": "0"
     },
-    "start_time": "2024-07-25 12:00:00"
+    "start_time": "2024-07-25 12:00:00",
+    "course_sort_enabled": "0",
+    "semester_start_date": ""
 }
