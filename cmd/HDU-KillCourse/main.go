@@ -73,18 +73,6 @@ func main() {
 		}
 	}
 
-	// 生成ICS日历文件（设置semester_start_date后开启）
-	if cfg.SemesterStartDate != "" {
-		// 选课课程日历(来源course.json/Excel，不含预置分配课程)
-		if err := course.ExportIcsFiles(cfg); err != nil {
-			log.Error("生成ICS日历失败: ", err)
-		}
-		// 个人完整课表日历(在线拉取，含教务处预置分配课程)
-		if err := course.ExportPersonalTimetableICS(c, cfg); err != nil {
-			log.Error("生成个人完整课表ICS失败: ", err)
-		}
-	}
-
 	cancelCtx, cancel := context.WithCancel(ctx)
 	// 捕获终止信号
 	stopChan := make(chan os.Signal, 1)
@@ -104,5 +92,10 @@ func main() {
 	case <-channel:
 		log.Info("此程序已完成，正在退出...")
 		cancel()
+		// 抢课完成后依据最新课表生成ICS日历：反映实际选课结果，
+		// 自动排除未选上的备选教学班，并包含教务处预置分配的课程。
+		if err := course.ExportTimetableICS(c, cfg); err != nil {
+			log.Error("生成课表ICS失败: ", err)
+		}
 	}
 }

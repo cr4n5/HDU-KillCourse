@@ -112,6 +112,22 @@ func scheduleItemsToEvents(items []client.ScheduleItem, cfg *config.Config) ([]s
 	return events, nil
 }
 
+// ExportTimetableICS 抢课完成后生成课表ICS：
+// 优先在线拉取个人完整课表(反映实际选课结果、含预置分配课程、自动排除未选上的备选教学班)，
+// 在线失败时回退到按选课配置生成。未设置第1周星期一日期时给出提示并跳过。
+func ExportTimetableICS(c *client.Client, cfg *config.Config) error {
+	if cfg.SemesterStartDate == "" {
+		log.Info("未设置 semester_start_date(第1周星期一日期)，跳过课表ICS生成。")
+		log.Info("如需生成日历，请在 config.json 或 Web 配置页填写该日期(可查 HDU 校历，格式 2026-09-07)。")
+		return nil
+	}
+	if err := ExportPersonalTimetableICS(c, cfg); err != nil {
+		log.Error("在线获取个人课表失败，回退到按选课配置生成: ", err)
+		return ExportIcsFiles(cfg)
+	}
+	return nil
+}
+
 // ExportPersonalTimetableICS 拉取个人完整课表(含教务处预置分配的课程)并生成ICS日历
 func ExportPersonalTimetableICS(c *client.Client, cfg *config.Config) error {
 	if cfg.SemesterStartDate == "" {
