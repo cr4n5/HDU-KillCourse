@@ -207,11 +207,12 @@ func HandleCourse(c *client.Client, cfg *config.Config, course *client.GetCourse
 func KillCourse(ctx context.Context, channel chan string, c *client.Client, cfg *config.Config, course *client.GetCourseResp) {
 	// 计算需要等待的时间
 	// 时区
-	loc, err := time.LoadLocation("Asia/Shanghai")
-	if err != nil {
-		log.Error("初始化时间地区失败，正在使用手动定义的时区信息 :", err)
-		loc = time.FixedZone("CST", 8*3600)
-	}
+	// loc, err := time.LoadLocation("Asia/Shanghai")
+	// if err != nil {
+	// 	log.Error("初始化时间地区失败，正在使用手动定义的时区信息 :", err)
+	// 	loc = time.FixedZone("CST", 8*3600)
+	// }
+	loc := time.FixedZone("CST", 8*3600)
 	t, err := time.ParseInLocation("2006-01-02 15:04:05", cfg.StartTime, loc)
 	if err != nil {
 		log.Error("时间格式错误: ", err)

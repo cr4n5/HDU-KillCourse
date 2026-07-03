@@ -31,6 +31,7 @@ type ClientBodyConfig struct {
 type Client struct {
 	client           *http.Client
 	ClientBodyConfig *ClientBodyConfig
+	UserAgent        string
 	NjdmIDXs         string
 	ZyhIDXs          string
 }
@@ -39,10 +40,15 @@ type Client struct {
 func NewClient(cfg *config.Config) *Client {
 	// 创建一个cookie jar
 	jar, _ := cookiejar.New(nil)
+	userAgent := vars.DefaultUserAgent
+	if cfg != nil && cfg.UserAgent != "" {
+		userAgent = cfg.UserAgent
+	}
 	return &Client{
 		client: &http.Client{
 			Jar: jar,
 		},
+		UserAgent: userAgent,
 	}
 }
 
@@ -53,7 +59,7 @@ func (c *Client) Get(url string, headers map[string]string) ([]byte, int, error)
 	}
 
 	// 添加请求头
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0")
+	req.Header.Set("User-Agent", c.UserAgent)
 	for key, value := range headers {
 		req.Header.Set(key, value)
 	}
@@ -89,7 +95,7 @@ func (c *Client) Post(url string, formData string, headers map[string]string) ([
 
 	// 添加请求头
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0")
+	req.Header.Set("User-Agent", c.UserAgent)
 	for key, value := range headers {
 		req.Header.Set(key, value)
 	}

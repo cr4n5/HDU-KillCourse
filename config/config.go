@@ -13,6 +13,7 @@ import (
 type Config struct {
 	CasLogin                `json:"cas_login"`
 	NewjwLogin              `json:"newjw_login"`
+	UserAgent               string `json:"user_agent"`
 	Cookies                 `json:"cookies"`
 	Time                    `json:"time"`
 	Course                  *orderedmap.OrderedMap `json:"course"`
@@ -103,6 +104,7 @@ var DefaultConfig = `{
         "password": "xxxxxxxx",
         "level": "1"
     },
+	"user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/149.0.0.0",
     "cookies": {
         "JSESSIONID": "",
         "route": "",

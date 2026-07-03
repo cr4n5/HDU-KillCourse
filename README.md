@@ -58,6 +58,7 @@ go build
         "password": "xxxxxxxx",
         "level:" : "1" //优先级
     }, // 0<1 所以优先使用cas登录 所以0比1大 数学天才
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/149.0.0.0", //请求头中的浏览器标识，若登陆失败可尝试修改
     "cookies": { //若 JSESSIONID为空 或 route为空 或 enabled为0，则将不会使用cookies登录
         "JSESSIONID": "",// 每次登录cookie参数都会自动更新
         "route": "",

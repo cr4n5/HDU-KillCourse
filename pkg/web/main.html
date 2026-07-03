@@ -137,6 +137,15 @@
             <hr style="border: 1px solid #ccc; margin: 20px 0;">
 
             <div class="form-group">
+                <h1 style="text-align: left;">User-Agent 设置</h1>
+                <h3>(! 注意: 影响请求头中的浏览器标识，若登陆失败可尝试修改)</h3>
+                <label for="userAgent">User-Agent</label>
+                <input type="text" id="userAgent" name="userAgent" value="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/149.0.0.0">
+            </div>
+
+            <hr style="border: 1px solid #ccc; margin: 20px 0;">
+
+            <div class="form-group">
                 <h1 style="text-align: left;">学年学期设置</h1>
                 <h3>(! 注意: 为所选课程所在的学年学期，如2024-2025-1即填写2024与1)</h3>
                 <label for="xueNian">学年</label>
@@ -243,7 +252,7 @@
             newRow.className = 'course-row';
             newRow.style = 'display: flex; align-items: center; margin-bottom: 10px;';
             newRow.innerHTML = `
-                <input type="text" class="course-input" placeholder="输入课程编号" style="flex: 1; margin-right: 10px;">
+                <input type="text" class="course-input" placeholder="输入课程教学班名称，例如(2024-2025-1)-C2092011-01" style="flex: 1; margin-right: 10px;">
                 <label  style="margin-right: 10px;">
                     <input type="checkbox" class="course-checkbox" checked>
                     打勾为选课,反之退课
@@ -343,6 +352,7 @@
                     route: document.getElementById('route').value,
                     enabled: document.getElementById('cookiesEnabled').checked ? "1" : "0"
                 },
+                user_agent: document.getElementById('userAgent').value,
                 time: {
                     XueNian: document.getElementById('xueNian').value,
                     XueQi: document.getElementById('xueQi').value
@@ -416,6 +426,9 @@
                 document.getElementById('JSESSIONID').value = config.cookies.JSESSIONID || '';
                 document.getElementById('route').value = config.cookies.route || '';
                 document.getElementById('cookiesEnabled').checked = config.cookies.enabled === "1";
+
+                // 填充 User-Agent
+                document.getElementById('userAgent').value = config.user_agent || '';
 
                 // 填充学年学期数据
                 document.getElementById('xueNian').value = config.time.XueNian || '';

@@ -44,6 +44,7 @@ func arrayListToOrderedMap(arrayList [][]string) *orderedmap.OrderedMap {
 type WebConfig struct {
 	CasLogin   config.CasLogin   `json:"cas_login"`
 	NewjwLogin config.NewjwLogin `json:"newjw_login"`
+	UserAgent  string            `json:"user_agent"`
 	Cookies    config.Cookies    `json:"cookies"`
 	Time       config.Time       `json:"time"`
 	Course     [][]string        `json:"course"` // 使用二维数组列表来存储课程信息
@@ -92,6 +93,7 @@ func StartWebServer() {
 		webCfg = WebConfig{
 			CasLogin:   cfg.CasLogin,
 			NewjwLogin: cfg.NewjwLogin,
+			UserAgent:  cfg.UserAgent,
 			Cookies:    cfg.Cookies,
 			Time:       cfg.Time,
 			Course:     courseArray,
@@ -115,6 +117,7 @@ func StartWebServer() {
 		// 更新 cfg
 		cfg.CasLogin = webCfg.CasLogin
 		cfg.NewjwLogin = webCfg.NewjwLogin
+		cfg.UserAgent = webCfg.UserAgent
 		cfg.Cookies = webCfg.Cookies
 		cfg.Time = webCfg.Time
 		cfg.Course = courseMap
